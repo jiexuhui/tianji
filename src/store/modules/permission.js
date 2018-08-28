@@ -60,6 +60,7 @@ const permission = {
                   path: "/" + m.path,
                   meta: m.meta,
                   name: m.name,
+                  hidden: m.hidden,
                   component: Layout
                 };
                 const childRoute = [];
@@ -69,6 +70,7 @@ const permission = {
                       path: child.path,
                       meta: child.meta,
                       name: child.name,
+                      hidden: child.hidden,
                       component: () => import(`@/views/${m.path}/${child.path}`)
                     });
                   }
@@ -79,7 +81,7 @@ const permission = {
                 accessedRouters.push(notfound);
               }
             }
-            console.log("accessedRouters",accessedRouters);
+            console.log("accessedRouters", accessedRouters);
             commit("SET_ROUTERS", accessedRouters);
             // setToken(data);
             resolve();

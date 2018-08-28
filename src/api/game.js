@@ -4,34 +4,18 @@ export function list(params) {
   return request.post("/admin/game/list", params);
 }
 
-export function fetchArticle(id) {
-  return request({
-    url: "/article/detail",
-    method: "get",
-    params: { id }
-  });
+export function add(params) {
+  return request.post("/admin/game/add", params);
 }
 
-export function fetchPv(pv) {
-  return request({
-    url: "/article/pv",
-    method: "get",
-    params: { pv }
-  });
+export function edit(params) {
+  return request.post("/admin/game/edit", params);
 }
 
-export function createArticle(data) {
-  return request({
-    url: "/article/create",
-    method: "post",
-    data
-  });
+export function del(params) {
+  return request.post("/admin/game/delete", params);
 }
 
-export function updateArticle(data) {
-  return request({
-    url: "/article/update",
-    method: "post",
-    data
-  });
+export function upload(params) {
+  return request.post("/admin/game/upload", params);
 }
