@@ -60,7 +60,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: "index.html",
       inject: true,
       favicon: resolve("favicon.ico"),
-      title: "vue-element-admin",
+      title: "天机电竞",
       path: config.dev.assetsPublicPath + config.dev.assetsSubDirectory
     })
   ]

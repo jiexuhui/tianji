@@ -332,8 +332,8 @@ export default {
           console.log(res);
           this.file = {};
           this.file.name = res.data.name;
-          this.temp.logo = "http://assets.v-islands.com/" + res.data.name;
-          this.file.url = "http://assets.v-islands.com/" + res.data.name;
+          this.temp.logo = res.data.url;
+          this.file.url = res.data.url;
           this.fileList.push(this.file);
           console.log("this.fileList:", this.fileList);
         }

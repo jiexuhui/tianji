@@ -2,12 +2,27 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true">
-        <el-form-item label="名称">
-          <el-input placeholder="名称" v-model="listQuery.name"></el-input>
+        <el-form-item label="ID">
+          <el-input placeholder="ID" v-model="listQuery.id"></el-input>
+        </el-form-item>
+        <el-form-item label="队伍名称">
+          <el-input placeholder="队伍名称" v-model="listQuery.game"></el-input>
+        </el-form-item>
+         <el-form-item label="游戏">
+          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="游戏">
+            <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" :placeholder="$t('table.importance')">
+          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
             <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+         <el-form-item label="类型">
+          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
+            <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -28,18 +43,29 @@
       </el-table-column>
       <el-table-column align="center"  label="ID" prop = "id">
       </el-table-column>
-      <el-table-column align="center" label="名称" width="150px" prop = "name">
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="图片" prop = "picture">
+      <el-table-column align="center" label="队伍名称" width="150px">
         <template slot-scope="scope">
-          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.picture" width="40" height="40"/>
+          <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="跳转地址" width="150px" prop = "url">
+      <el-table-column align="center" label="所属游戏" width="150px">
+        <template slot-scope="scope">
+          <span>{{scope.row.game}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center"  min-width="150" label="LOGO" prop = "logo">
+        <template slot-scope="scope">
+          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.logo" width="40" height="40"/>
+        </template>
       </el-table-column>
       <el-table-column align="center"  min-width="150" label="状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 0? "正常": "关闭"}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center"  min-width="150" label="type">
+        <template slot-scope="scope">
+          <el-tag type="success">{{scope.row.type | typeFilter}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center"  min-width="150" label="创建时间">
@@ -51,7 +77,7 @@
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
           </el-button>
-          <el-button v-if="scope.row.status!='1'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
+          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
           </el-button>
         </template>
       </el-table-column>
@@ -62,21 +88,29 @@
       </el-pagination>
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog  :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="名称" prop="name" >
+        <el-form-item label="队伍名称" prop="name" >
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="图片" prop="picture" >
-          <el-input v-model="temp.picture"></el-input>
+        <el-form-item label="LOGO" prop="logo" >
+          <el-input v-model="temp.logo"></el-input>
         </el-form-item>
-        <el-form-item label="跳转地址" prop="url" >
-          <el-input v-model="temp.url"></el-input>
+        
+        <el-form-item label="游戏" prop="gameid">
+          <el-select class="filter-item" v-model="temp.gameid" placeholder="游戏">
+            <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-radio-group v-model="temp.type">
+            <el-radio-button v-for="item in typeOptions" :label="item.value">{{item.label}}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="temp.status">
-            <el-radio-button label="0">正常</el-radio-button>
-            <el-radio-button label="1">关闭</el-radio-button>
+            <el-radio-button v-for="item in statusOptions" :label="item.value">{{item.label}}</el-radio-button>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -87,7 +121,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="上传banner" :visible.sync="uploaddialogFormVisible">
+    <el-dialog title="上传图片" :visible.sync="uploaddialogFormVisible">
       <el-form :rules="rules" ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
           <el-upload
             class="upload"
@@ -115,13 +149,15 @@
 </template>
 
 <script>
-import { list, add, edit, del, upload } from "@/api/banner";
+import { list, add, edit, del, upload } from "@/api/team";
 import waves from "@/directive/waves"; // 水波纹指令
+import elDragDialog from "@/directive/el-dragDialog";
 
 export default {
   name: "complexTable",
   directives: {
-    waves
+    waves,
+    elDragDialog
   },
   data() {
     return {
@@ -130,15 +166,19 @@ export default {
       total: null,
       listLoading: true,
       listQuery: {
+        id: undefined,
         name: "",
-        status: 0,
+        type: undefined,
+        gameid: undefined,
+        status: undefined,
         page: 1,
         limit: 20
       },
       temp: {
         name: "",
-        picture: "",
-        url: "",
+        logo: "",
+        gameid: undefined,
+        type: undefined,
         status: 0
       },
       dialogFormVisible: false,
@@ -147,17 +187,8 @@ export default {
         update: "Edit",
         create: "Create"
       },
-      rules: {
-        name: [{ required: true, message: "请输入名称", trigger: "blur" }]
-      },
-      uploaddialogFormVisible: false,
-      fileList: [],
-      file: {},
+      gameOptions: [],
       statusOptions: [
-        {
-          value: 2,
-          label: "所有"
-        },
         {
           value: 0,
           label: "正常"
@@ -166,7 +197,23 @@ export default {
           value: 1,
           label: "关闭"
         }
-      ]
+      ],
+      typeOptions: [
+        {
+          value: 1,
+          label: "类型一"
+        },
+        {
+          value: 2,
+          label: "类型二"
+        }
+      ],
+      rules: {
+        game: [{ required: true, message: "请输入游戏名称", trigger: "blur" }]
+      },
+      uploaddialogFormVisible: false,
+      fileList: [],
+      file: {}
     };
   },
   filters: {
@@ -176,6 +223,21 @@ export default {
         1: "info"
       };
       return statusMap[status];
+    },
+    typeFilter(type) {
+      const typeOptions = [
+        {
+          value: 1,
+          label: "类型一"
+        },
+        {
+          value: 2,
+          label: "类型二"
+        }
+      ];
+      const typeOption = typeOptions.filter(item => item.value === type);
+      console.log("typeoptopm:", typeOption);
+      return typeOption[0].label;
     }
   },
   created() {
@@ -186,7 +248,8 @@ export default {
       this.listLoading = true;
       list(this.listQuery).then(response => {
         this.list = response.data[0];
-        this.total = response.data[1][0].count;
+        this.gameOptions = response.data[1];
+        this.total = response.data[2][0].count;
         this.listLoading = false;
       });
     },
@@ -216,16 +279,8 @@ export default {
         }
       });
     },
-    resetTemp() {
-      this.temp = {
-        name: "",
-        picture: "",
-        url: "",
-        status: 0
-      };
-    },
     handleCreate() {
-      this.resetTemp();
+      // this.resetTemp();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -244,7 +299,7 @@ export default {
               this.$message.success("操作成功");
               this.dialogFormVisible = false;
             } else {
-              this.$message.error("游戏已存在");
+              this.$message.error("队伍已存在");
             }
           });
         }
@@ -342,9 +397,9 @@ export default {
       this.fileList = [];
       // console.log("row", row);
       this.temp = Object.assign({}, row);
-      this.file.name = "banner-" + row.name;
-      if (row.picture !== "" && row.picture !== null) {
-        this.file.url = row.picture;
+      this.file.name = row.name + "-logo";
+      if (row.logo !== "" && row.logo !== null) {
+        this.file.url = row.logo;
         this.fileList.push(this.file);
       }
       this.uploaddialogFormVisible = true;
@@ -365,7 +420,7 @@ export default {
           console.log(res);
           this.file = {};
           this.file.name = res.data.name;
-          this.temp.picture = res.data.url;
+          this.temp.logo = res.data.url;
           this.file.url = res.data.url;
           this.fileList.push(this.file);
           console.log("this.fileList:", this.fileList);
@@ -381,7 +436,6 @@ export default {
       console.log(file);
     },
     uploadLogo() {
-      console.log(this.temp);
       edit(this.temp).then(res => {
         if (res.code == 200) {
           for (const v of this.list) {
