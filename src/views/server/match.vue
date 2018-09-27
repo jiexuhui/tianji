@@ -5,8 +5,8 @@
         <el-form-item label="ID">
           <el-input placeholder="ID" v-model="listQuery.id"></el-input>
         </el-form-item>
-        <el-form-item label="队伍名称">
-          <el-input placeholder="队伍名称" v-model="listQuery.game"></el-input>
+        <el-form-item label="比赛名称">
+          <el-input placeholder="比赛名称" v-model="listQuery.name"></el-input>
         </el-form-item>
          <el-form-item label="游戏">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.gameid" placeholder="游戏">
@@ -20,13 +20,12 @@
             </el-option>
           </el-select>
         </el-form-item> -->
-        </el-form-item> -->
-         <el-form-item label="类型">
+         <!-- <el-form-item label="类型">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
             <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" icon="el-icon-search"  @click="handleFilter">搜索</el-button>
            <el-button
@@ -44,29 +43,20 @@
       </el-table-column>
       <el-table-column align="center"  label="ID" prop = "id">
       </el-table-column>
-      <el-table-column align="center" label="队伍名称" width="150px">
+      <el-table-column align="center" label="名称" prop="name">
+      </el-table-column>
+      <el-table-column align="center" label="所属游戏" prop="desc" >
+      </el-table-column>
+      <el-table-column align="center" label="队伍" prop = "teams">
+      </el-table-column>
+      <el-table-column align="center" label="开始时间" prop = "stime">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
+            <span>{{formatTime(scope.row.stime)}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="所属游戏" width="150px">
+      <el-table-column align="center" label="结束时间" prop = "etime">
         <template slot-scope="scope">
-          <span>{{scope.row.game}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="LOGO" prop = "logo">
-        <template slot-scope="scope">
-          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.logo" width="40" height="40"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="状态">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 0? "正常": "关闭"}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="type">
-        <template slot-scope="scope">
-          <el-tag type="success">{{scope.row.type | typeFilter}}</el-tag>
+            <span>{{formatTime(scope.row.etime)}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center"  min-width="150" label="创建时间">
@@ -91,28 +81,41 @@
 
     <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog  :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="队伍名称" prop="name" >
+        <el-form-item label="比赛名称" prop="name" >
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="LOGO" prop="logo" >
-          <el-input v-model="temp.logo"></el-input>
+        <el-form-item label="描述" prop="desc" >
+          <el-input v-model="temp.desc"></el-input>
         </el-form-item>
-        
         <el-form-item label="游戏" prop="gameid">
           <el-select class="filter-item" v-model="temp.gameid" placeholder="游戏">
             <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="类型" prop="type">
-          <el-radio-group v-model="temp.type">
-            <el-radio-button v-for="item in typeOptions" :label="item.value">{{item.label}}</el-radio-button>
-          </el-radio-group>
+        <el-form-item label="队伍" prop="team">
+          <el-select class="filter-item" v-model="temp.teams" placeholder="队伍">
+            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="temp.status">
-            <el-radio-button v-for="item in statusOptions" :label="item.value">{{item.label}}</el-radio-button>
-          </el-radio-group>
+                <el-form-item prop="stime" label="开始时间">
+          <el-date-picker
+            v-model="temp.stime"
+            type="datetime"
+            placeholder="选择日期时间"
+            default-time="12:00:00"
+            value-format="yyyy-MM-dd HH:mm:ss">
+          </el-date-picker>
+        </el-form-item>
+         <el-form-item prop="etime" label="结束时间">
+          <el-date-picker
+            v-model="temp.etime"
+            type="datetime"
+            placeholder="选择日期时间"
+            default-time="18:00:00"
+            value-format="yyyy-MM-dd HH:mm:ss">
+          </el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -150,9 +153,10 @@
 </template>
 
 <script>
-import { list, add, edit, del, upload } from "@/api/team";
+import { list, add, edit, del } from "@/api/match";
 import waves from "@/directive/waves"; // 水波纹指令
 import elDragDialog from "@/directive/el-dragDialog";
+import { parseTime } from "@/utils/index";
 
 export default {
   name: "complexTable",
@@ -169,18 +173,16 @@ export default {
       listQuery: {
         id: undefined,
         name: "",
-        type: undefined,
-        gameid: undefined,
-        status: undefined,
         page: 1,
         limit: 20
       },
       temp: {
         name: "",
-        logo: "",
+        desc: "",
         gameid: undefined,
-        type: undefined,
-        status: 0
+        teams: undefined,
+        stime: "",
+        etime: ""
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -214,7 +216,8 @@ export default {
       },
       uploaddialogFormVisible: false,
       fileList: [],
-      file: {}
+      file: {},
+      teamOptions: []
     };
   },
   filters: {
@@ -245,12 +248,16 @@ export default {
     this.getList();
   },
   methods: {
+    formatTime(time) {
+      return parseTime(time);
+    },
     getList() {
       this.listLoading = true;
       list(this.listQuery).then(response => {
         this.list = response.data[0];
         this.gameOptions = response.data[1];
         this.total = response.data[2][0].count;
+        this.teamOptions = response.data[3];
         this.listLoading = false;
       });
     },
