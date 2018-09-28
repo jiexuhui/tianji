@@ -48,6 +48,17 @@
                   </el-form-item>
                 </el-col>
 
+                <el-col :span="8">
+                  <el-form-item label="关联比赛">
+                    <el-select class="filter-item" v-model="postForm.matchid" placeholder="请选择">
+                      <el-option v-for="item in matchs" :key="item.id" :label="item.name" :value="item.id">
+                          <span style="float: left">{{ item.name }}</span>
+                          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.id }}</span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
                 <!-- <el-col :span="8">
                   <el-form-item label-width="60px" label="重要性:" class="postInfo-container-item">
                     <el-rate style="margin-top:8px;" v-model="postForm.importance" :max='3' :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :low-threshold="1"
@@ -170,7 +181,8 @@ export default {
           label: "关闭",
           value: 1
         }
-      ]
+      ],
+      matchs: []
     };
   },
   computed: {
@@ -181,10 +193,12 @@ export default {
   created() {
     if (this.isEdit) {
       this.postForm = Object.assign({}, this.$route.params);
+      this.matchs = this.postForm.matchs;
       // const id = this.$route.params && this.$route.params.id;
       // this.fetchData(id);
       console.log("postForm:", this.postForm);
     } else {
+      this.matchs = this.$route.params.matchs;
       this.postForm = Object.assign({}, defaultForm);
     }
   },

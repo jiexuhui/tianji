@@ -7,11 +7,11 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search"  @click="handleFilter">搜索</el-button>
-          <router-link class="link-type" :to="'/server/createArticle'">
+          <!-- <router-link class="link-type" :to="'/server/createArticle'"> -->
             <el-button
               type="success"
-              icon="el-icon-circle-plus" style="margin-left: 0">新增</el-button>
-          </router-link>
+              icon="el-icon-circle-plus" style="margin-left: 0" @click="addpath({})">新增</el-button>
+          <!-- </router-link> -->
            <!-- <el-button
               type="success"
               @click="handleCreate" icon="el-icon-circle-plus" style="margin-left: 0">新增</el-button> -->
@@ -34,6 +34,12 @@
       <el-table-column width="120px" align="center" label="作者">
         <template slot-scope="scope">
           <span>{{scope.row.author}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="120px" align="center" label="关联比赛">
+        <template slot-scope="scope">
+          <span>{{scope.row.matchname}}</span>
         </template>
       </el-table-column>
 
@@ -95,7 +101,8 @@ export default {
         title: "",
         page: 1,
         limit: 10
-      }
+      },
+      matchs: []
     };
   },
   filters: {
@@ -113,13 +120,19 @@ export default {
   },
   methods: {
     detailpath(row) {
+      row = Object.assign(row, { matchs: this.matchs });
       this.$router.push({ name: "编辑文章", params: row });
+    },
+    addpath(row) {
+      row = Object.assign(row, { matchs: this.matchs });
+      this.$router.push({ name: "创建文章", params: row });
     },
     getList() {
       this.listLoading = true;
       fetchList(this.listQuery).then(response => {
         this.list = response.data[0];
         this.total = response.data[1][0].count;
+        this.matchs = response.data[2];
         this.listLoading = false;
       });
     },

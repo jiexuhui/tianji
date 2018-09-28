@@ -47,7 +47,25 @@
       </el-table-column>
       <el-table-column align="center" label="所属游戏" prop="desc" >
       </el-table-column>
-      <el-table-column align="center" label="队伍" prop = "teams">
+      <el-table-column align="center" label="参赛队伍" prop = "tname">
+      </el-table-column>
+      <el-table-column align="center" label="左侧队伍" prop = "leftteam">
+      </el-table-column>
+      <el-table-column align="center" label="左侧比分" prop = "leftscore">
+      </el-table-column>
+      <el-table-column align="center" label="右侧队伍" prop = "rightteam">
+      </el-table-column>
+      <el-table-column align="center" label="右侧比分" prop = "rightscore">
+      </el-table-column>
+      <el-table-column align="center" label="排序" prop = "sort">
+      </el-table-column>
+      <el-table-column align="center" label="状态" prop = "status">
+         <template slot-scope="scope">
+            <span v-if="scope.row.status == 1">未开始</span>
+            <span v-if="scope.row.status == 2">进行中</span>
+            <span v-if="scope.row.status == 3">已结束</span>
+            <span v-if="scope.row.status == 0">活动标识，前端页面不显示</span>
+        </template>
       </el-table-column>
       <el-table-column align="center" label="开始时间" prop = "stime">
         <template slot-scope="scope">
@@ -61,7 +79,7 @@
       </el-table-column>
       <el-table-column align="center"  min-width="150" label="创建时间">
         <template slot-scope="scope">
-          <span>{{scope.row.ctime}}</span>
+          <span>{{formatTime(scope.row.ctime)}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('table.actions')" width="230" class-name="small-padding fixed-width">
@@ -93,13 +111,40 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="队伍" prop="team">
-          <el-select class="filter-item" v-model="temp.teams" placeholder="队伍">
+        <el-form-item label="参赛队伍" prop="teams">
+          <el-select class="filter-item" v-model="temp.teams" placeholder="参赛队伍" multiple>
             <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-                <el-form-item prop="stime" label="开始时间">
+        <el-form-item label="左侧队伍" prop="leftteam">
+          <el-select class="filter-item" v-model="temp.leftteam" placeholder="左侧队伍" >
+            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="左侧比分" prop="leftscore">
+          <el-input type="number" v-model="temp.leftscore"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧队伍" prop="rightteam">
+          <el-select class="filter-item" v-model="temp.rightteam" placeholder="右侧队伍">
+            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="右侧比分" prop="rightscore">
+          <el-input type="number" v-model="temp.rightscore"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-select class="filter-item" v-model="temp.status" placeholder="状态">
+            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序" prop="sort" >
+          <el-input type = "number" v-model="temp.sort"></el-input>
+        </el-form-item>
+        <el-form-item prop="stime" label="开始时间">
           <el-date-picker
             v-model="temp.stime"
             type="datetime"
@@ -182,7 +227,13 @@ export default {
         gameid: undefined,
         teams: undefined,
         stime: "",
-        etime: ""
+        etime: "",
+        sort: 0,
+        status: undefined,
+        leftteam: undefined,
+        leftscore: undefined,
+        rightteam: undefined,
+        rightscore: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -194,11 +245,19 @@ export default {
       statusOptions: [
         {
           value: 0,
-          label: "正常"
+          label: "活动标识，前端页面不显示"
         },
         {
           value: 1,
-          label: "关闭"
+          label: "未开始"
+        },
+        {
+          value: 2,
+          label: "进行中"
+        },
+        {
+          value: 3,
+          label: "已结束"
         }
       ],
       typeOptions: [
@@ -212,7 +271,7 @@ export default {
         }
       ],
       rules: {
-        game: [{ required: true, message: "请输入游戏名称", trigger: "blur" }]
+        name: [{ required: true, message: "请输入比赛名称", trigger: "blur" }]
       },
       uploaddialogFormVisible: false,
       fileList: [],
@@ -289,6 +348,7 @@ export default {
     },
     handleCreate() {
       // this.resetTemp();
+      this.$refs.dataForm && this.$refs.dataForm.resetFields();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -298,16 +358,17 @@ export default {
     createData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          console.log(this.temp);
+          console.log(this.temp.teams);
+          this.temp.teams = this.temp.teams.toString();
+          console.log(this.temp.teams);
           add(this.temp).then(res => {
             if (res.code === 200) {
-              this.temp.id = res.id;
-              this.temp.ctime = res.ctime;
-              this.list.push(this.temp);
+              // this.temp.id = res.id;
+              // this.temp.ctime = res.ctime;
+              // this.list.unshift(this.temp);
+              this.getList();
               this.$message.success("操作成功");
               this.dialogFormVisible = false;
-            } else {
-              this.$message.error("队伍已存在");
             }
           });
         }
@@ -315,6 +376,9 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
+      console.log("this.temp.teams11", row);
+      this.temp.teams = this.temp.teams.split(",").map(Number);
+      console.log("this.temp.teams", this.temp.teams);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -326,15 +390,17 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           console.log("%o", tempData);
+          tempData.teams = tempData.teams.toString();
           edit(tempData).then(res => {
             if (res.code == 200) {
-              for (const v of this.list) {
-                if (v.id === this.temp.id) {
-                  const index = this.list.indexOf(v);
-                  this.list.splice(index, 1, this.temp);
-                  break;
-                }
-              }
+              this.getList();
+              // for (const v of this.list) {
+              //   if (v.id === this.temp.id) {
+              //     const index = this.list.indexOf(v);
+              //     this.list.splice(index, 1, tempData);
+              //     break;
+              //   }
+              // }
               this.dialogFormVisible = false;
               this.$notify({
                 title: "成功",
