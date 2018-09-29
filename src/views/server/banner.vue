@@ -376,12 +376,13 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
+      this.file.url = ""
     },
     handlePreview(file) {
       console.log(file);
     },
     uploadLogo() {
-      console.log(this.temp);
+      this.temp.picture = this.file.url;
       edit(this.temp).then(res => {
         if (res.code == 200) {
           for (const v of this.list) {

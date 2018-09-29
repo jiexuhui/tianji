@@ -43,6 +43,18 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center"  min-width="150" label="配图" prop = "image">
+        <template slot-scope="scope">
+          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.image" width="40" height="40"/>
+        </template>
+      </el-table-column>
+      <el-table-column width="120px" align="center" label="TAG">
+        <template slot-scope="scope">
+          <el-tag  type="success" v-if="scope.row.tag == 1">热门</el-tag >
+          <el-tag type="success" v-if="scope.row.tag == 2">置顶</el-tag >
+        </template>
+      </el-table-column>
+
       <!-- <el-table-column width="100px" label="Importance">
         <template slot-scope="scope">
           <svg-icon v-for="n in +scope.row.importance" icon-class="star" class="meta-item__icon" :key="n"></svg-icon>
@@ -84,11 +96,35 @@
       </el-pagination>
     </div>
 
+    <el-dialog title="上传banner" :visible.sync="uploaddialogFormVisible">
+      <el-form ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
+          <el-upload
+            class="upload"
+            ref="upload"
+            action=""
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-upload="beforeupload" 
+            :file-list="fileList"
+            :auto-upload="true"
+            list-type="picture">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+          <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="uploaddialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="uploadLogo">{{$t('table.confirm')}}</el-button>
+        <!-- <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button> -->
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, del } from "@/api/article";
+import { fetchList, del, upload, updateArticle } from "@/api/article";
 
 export default {
   name: "articleList",
@@ -102,7 +138,10 @@ export default {
         page: 1,
         limit: 10
       },
-      matchs: []
+      matchs: [],
+      uploaddialogFormVisible: false,
+      fileList: [],
+      file: {}
     };
   },
   filters: {
@@ -181,7 +220,71 @@ export default {
             message: "已取消删除"
           });
         });
-    }
+    },
+    handleUpload(row) {
+      this.fileList = [];
+      console.log("row", row);
+      this.temp = Object.assign({}, row);
+      this.file.name = row.title + "-image";
+      if (row.image !== "" && row.image !== null) {
+        this.file.url = row.image;
+        this.fileList.push(this.file);
+      }
+      this.uploaddialogFormVisible = true;
+    },
+    beforeupload(file) {
+      if (this.fileList.length === 1) {
+        this.$message.error("只能上传一张图片哦~");
+        return;
+      }
+      console.log("beforefile:", file);
+      let param = new FormData(); // 创建form对象
+      param.append("file", file, file.name); // file对象是 beforeUpload参数
+      let config = {
+        headers: { "Content-Type": "multipart/form-data" }
+      };
+      upload(param).then(res => {
+        if (res.code === 200 && res.data) {
+          console.log(res);
+          this.file = {};
+          this.file.name = res.data.name;
+          this.temp.logo = res.data.url;
+          this.file.url = res.data.url;
+          this.fileList.push(this.file);
+          console.log("this.fileList:", this.fileList);
+        }
+      });
+      return false;
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+      this.fileList = fileList;
+      this.file.url = ""
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    uploadLogo() {
+      this.temp.image = this.file.url;
+      updateArticle(this.temp).then(res => {
+        if (res.code == 200) {
+          for (const v of this.list) {
+            if (v.id === this.temp.id) {
+              const index = this.list.indexOf(v);
+              this.list.splice(index, 1, this.temp);
+              break;
+            }
+          }
+          this.uploaddialogFormVisible = false;
+          this.$notify({
+            title: "成功",
+            message: "更新成功",
+            type: "success",
+            duration: 2000
+          });
+        }
+      });
+    },
   }
 };
 </script>

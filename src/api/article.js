@@ -27,3 +27,7 @@ export function updateArticle(data) {
 export function del(id) {
   return request.post("/admin/article/delete", { id });
 }
+
+export function upload(params) {
+  return request.post("/admin/article/upload", params);
+}

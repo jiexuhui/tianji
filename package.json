@@ -41,6 +41,7 @@
     "jszip": "3.1.5",
     "mockjs": "1.0.1-beta3",
     "normalize.css": "7.0.0",
+    "npm": "^6.4.1",
     "nprogress": "0.2.0",
     "qs": "^6.5.2",
     "screenfull": "3.3.2",

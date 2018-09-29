@@ -49,6 +49,15 @@
                 </el-col>
 
                 <el-col :span="8">
+                  <el-form-item label="tag">
+                    <el-select class="filter-item" v-model="postForm.tag" placeholder="请选择">
+                      <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
+                <el-col :span="8">
                   <el-form-item label="关联比赛">
                     <el-select class="filter-item" v-model="postForm.matchid" placeholder="请选择">
                       <el-option v-for="item in matchs" :key="item.id" :label="item.name" :value="item.id">
@@ -180,6 +189,16 @@ export default {
         {
           label: "关闭",
           value: 1
+        }
+      ],
+      tagOptions: [
+        {
+          label: "热门",
+          value: 1
+        },
+        {
+          label: "置顶",
+          value: 2
         }
       ],
       matchs: []

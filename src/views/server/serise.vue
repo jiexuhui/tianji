@@ -14,13 +14,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="赛事">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.seriseid" placeholder="赛事">
-            <el-option v-for="item in seriseOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="状态">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
             <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -52,23 +45,20 @@
       </el-table-column>
       <el-table-column align="center" label="名称" prop="name">
       </el-table-column>
-      <el-table-column align="center" label="赛事" prop="serisename" >
+      <el-table-column align="center" label="描述" prop="desc" >
       </el-table-column>
       <el-table-column align="center" label="参赛队伍" prop = "tname">
       </el-table-column>
-      <el-table-column align="center" label="左侧队伍" prop = "leftteam">
+      <el-table-column align="center" label="所属游戏" prop = "game">
       </el-table-column>
-      <el-table-column align="center" label="左侧比分" prop = "leftscore">
-      </el-table-column>
-      <el-table-column align="center" label="右侧队伍" prop = "rightteam">
-      </el-table-column>
-      <el-table-column align="center" label="右侧比分" prop = "rightscore">
-      </el-table-column>
-      <el-table-column align="center" label="排序" prop = "sort">
+      <el-table-column align="center"  min-width="150" label="logo" prop = "image">
+        <template slot-scope="scope">
+          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.image" width="40" height="40"/>
+        </template>
       </el-table-column>
       <el-table-column align="center" label="场次" prop = "whitch">
         <template slot-scope="scope">
-          <span>第{{scope.row.whitch}}场，共{{scope.row.many}}场</span>
+          <span>共{{scope.row.many}}场</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态" prop = "status">
@@ -80,7 +70,12 @@
       </el-table-column>
       <el-table-column align="center" label="开始时间" prop = "stime">
         <template slot-scope="scope">
-            <span>{{scope.row.stime}}</span>
+            <span>{{formatTime(scope.row.stime)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="结束时间" prop = "etime">
+        <template slot-scope="scope">
+            <span>{{formatTime(scope.row.etime)}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center"  min-width="150" label="创建时间">
@@ -105,41 +100,26 @@
 
     <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog  :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="比赛名称" prop="name" >
+        <el-form-item label="赛事名称" prop="name" >
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="赛事" prop="seriseid">
-          <el-select class="filter-item" v-model="temp.seriseid" placeholder="赛事">
-            <el-option v-for="item in seriseOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="描述" prop="desc" >
+          <el-input v-model="temp.desc"></el-input>
         </el-form-item>
-        <el-form-item label="游戏" prop="gameid">
+        <el-form-item label="所属游戏" prop="gameid">
           <el-select class="filter-item" v-model="temp.gameid" placeholder="游戏">
             <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="第几场" prop="whitch">
-          <el-input type="number" v-model="temp.whitch"></el-input>
-        </el-form-item>
-        <el-form-item label="左侧队伍" prop="leftteam">
-          <el-select class="filter-item" v-model="temp.leftteam" placeholder="左侧队伍" >
+        <el-form-item label="参赛队伍" prop="teams">
+          <el-select class="filter-item" v-model="temp.teams" placeholder="参赛队伍" multiple>
             <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="左侧比分" prop="leftscore">
-          <el-input type="number" v-model="temp.leftscore"></el-input>
-        </el-form-item>
-        <el-form-item label="右侧队伍" prop="rightteam">
-          <el-select class="filter-item" v-model="temp.rightteam" placeholder="右侧队伍">
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="右侧比分" prop="rightscore">
-          <el-input type="number" v-model="temp.rightscore"></el-input>
+        <el-form-item label="共几场" prop="many">
+          <el-input type="number" v-model="temp.many"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select class="filter-item" v-model="temp.status" placeholder="状态">
@@ -153,6 +133,15 @@
             type="datetime"
             placeholder="选择日期时间"
             default-time="12:00:00"
+            value-format="yyyy-MM-dd HH:mm:ss">
+          </el-date-picker>
+        </el-form-item>
+         <el-form-item prop="etime" label="结束时间">
+          <el-date-picker
+            v-model="temp.etime"
+            type="datetime"
+            placeholder="选择日期时间"
+            default-time="18:00:00"
             value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
@@ -192,7 +181,7 @@
 </template>
 
 <script>
-import { list, add, edit, del } from "@/api/match";
+import { list, add, edit, del, upload } from "@/api/serise";
 import waves from "@/directive/waves"; // 水波纹指令
 import elDragDialog from "@/directive/el-dragDialog";
 import { parseTime } from "@/utils/index";
@@ -236,7 +225,6 @@ export default {
         create: "Create"
       },
       gameOptions: [],
-      seriseOptions: [],
       statusOptions: [
         {
           value: 1,
@@ -308,7 +296,6 @@ export default {
         this.gameOptions = response.data[1];
         this.total = response.data[2][0].count;
         this.teamOptions = response.data[3];
-        this.seriseOptions = response.data[4];
         this.listLoading = false;
       });
     },
@@ -350,6 +337,9 @@ export default {
     createData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
+          console.log(this.temp.teams);
+          this.temp.teams = this.temp.teams.toString();
+          console.log(this.temp.teams);
           add(this.temp).then(res => {
             if (res.code === 200) {
               // this.temp.id = res.id;
@@ -365,6 +355,9 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
+      console.log("this.temp.teams11", row);
+      this.temp.teams = this.temp.teams.split(",").map(Number);
+      console.log("this.temp.teams", this.temp.teams);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -376,6 +369,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           console.log("%o", tempData);
+          tempData.teams = tempData.teams.toString();
           edit(tempData).then(res => {
             if (res.code == 200) {
               this.getList();
@@ -457,8 +451,8 @@ export default {
       // console.log("row", row);
       this.temp = Object.assign({}, row);
       this.file.name = row.name + "-logo";
-      if (row.logo !== "" && row.logo !== null) {
-        this.file.url = row.logo;
+      if (row.image !== "" && row.image !== null) {
+        this.file.url = row.image;
         this.fileList.push(this.file);
       }
       this.uploaddialogFormVisible = true;
@@ -490,11 +484,13 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
+      this.file.url = ""
     },
     handlePreview(file) {
       console.log(file);
     },
     uploadLogo() {
+      this.temp.image = this.file.url;
       edit(this.temp).then(res => {
         if (res.code == 200) {
           for (const v of this.list) {
