@@ -96,8 +96,8 @@
           <el-input v-model="temp.introduction"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleid">
-          <el-select class="filter-item" v-model="temp.rolename" @change="selectGet" placeholder="请选择">
-            <el-option v-for="item in role" :key="item.id" :label="item.role" :value="item.role">
+          <el-select class="filter-item" v-model="temp.roleid" placeholder="请选择">
+            <el-option v-for="item in role" :key="item.id" :label="item.role" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -269,14 +269,16 @@ export default {
     createData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          this.temp.roleid = this.selectRole.id || "";
+          // this.temp.roleid = this.selectRole.id || "";
           console.log(this.temp);
-          addsystemuser(this.temp).then(res => {
+          this.$store.dispatch("AddAdminUser", this.temp).then(res => {
             if (res.code == 200) {
-              this.temp.id = res.data.id;
-              this.temp.roleid = this.selectRole.id;
-              this.temp.join_at = res.data.join_at;
-              this.list.unshift(this.temp);
+              this.temp.id = res.data[0].id;
+              this.selectGet(this.temp.roleid);
+              // this.temp.roleid = this.selectRole.id;
+              this.temp.rolename = this.selectRole.role;
+              this.temp.join_at = res.data[0].join_at;
+              this.list.push(this.temp);
               this.dialogFormVisible = false;
               this.$notify({
                 title: "成功",
@@ -294,7 +296,7 @@ export default {
       let obj = {};
       obj = this.role.find(item => {
         //这里的userList就是上面遍历的数据源
-        return item.role === vId; //筛选出匹配数据
+        return item.id === vId; //筛选出匹配数据
       });
       this.selectRole = obj;
     },
@@ -311,12 +313,13 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          tempData.roleid = this.selectRole.id;
+          // tempData.roleid = this.selectRole.id;
           console.log("%o", tempData);
           this.$store.dispatch("EditAdminUser", tempData).then(res => {
             if (res.code == 200) {
+              this.selectGet(this.temp.roleid);
               this.temp.rolename = this.selectRole.role;
-              this.temp.join_at = res.data.join_at;
+              this.temp.join_at = res.data[0].join_at;
               for (const v of this.list) {
                 if (v.id === this.temp.id) {
                   const index = this.list.indexOf(v);

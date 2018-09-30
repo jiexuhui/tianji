@@ -58,11 +58,20 @@
       </el-table-column>
       <el-table-column align="center" label="场次" prop = "whitch">
         <template slot-scope="scope">
-          <span>共{{scope.row.many}}场</span>
+          <span>共{{scope.row.many}}场,正在进行第{{scope.row.whitch}}场</span>
         </template>
+      </el-table-column>
+      <el-table-column align="center" label="左侧队伍" prop = "lteam">
+      </el-table-column>
+      <el-table-column align="center" label="左侧比分" prop = "lscore">
+      </el-table-column>
+      <el-table-column align="center" label="右侧队伍" prop = "rteam">
+      </el-table-column>
+      <el-table-column align="center" label="右侧比分" prop = "rscore">
       </el-table-column>
       <el-table-column align="center" label="状态" prop = "status">
         <template slot-scope="scope">
+          <span v-if="scope.row.status == 0">活动标识</span>
           <span v-if="scope.row.status == 1">未开始</span>
           <span v-if="scope.row.status == 2">进行中</span>
           <span v-if="scope.row.status == 3">已结束</span>
@@ -120,6 +129,27 @@
         </el-form-item>
         <el-form-item label="共几场" prop="many">
           <el-input type="number" v-model="temp.many"></el-input>
+        </el-form-item>
+        <el-form-item label="正在进行" prop="many">
+          <el-input type="number" v-model="temp.whitch"></el-input>
+        </el-form-item>
+        <el-form-item label="左侧队伍" prop="lteam">
+          <el-select class="filter-item" v-model="temp.lteam" placeholder="左侧队伍" >
+            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="左侧比分" prop="lscore">
+          <el-input type="number" v-model="temp.lscore"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧队伍" prop="rteam">
+          <el-select class="filter-item" v-model="temp.rteam" placeholder="右侧队伍">
+            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="右侧比分" prop="rscore">
+          <el-input type="number" v-model="temp.rscore"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select class="filter-item" v-model="temp.status" placeholder="状态">
@@ -226,6 +256,10 @@ export default {
       },
       gameOptions: [],
       statusOptions: [
+        {
+          value: 0,
+          label: "活动标识"
+        },
         {
           value: 1,
           label: "未开始"
@@ -484,7 +518,7 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
-      this.file.url = ""
+      this.file.url = "";
     },
     handlePreview(file) {
       console.log(file);

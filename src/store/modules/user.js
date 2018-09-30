@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { loginByUsername, logout, getUserInfo } from "@/api/login";
-import { editsystemuser } from "@/api/system";
+import { editsystemuser, addsystemuser } from "@/api/system";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 import crypto from "crypto";
 const _start = "1k1wgr7f1s469jgt6r1wefco7ho23hw6";
@@ -101,18 +101,41 @@ const user = {
       });
     },
 
-    EditAdminUser({ commit, state }, params) {
-      console.log("password:"+params.password);
-      if(params.password === "undefined"){
+    AddAdminUser({ commit, state }, params) {
+      console.log("password:" + params.password);
+      if (params.password === "undefined") {
         params.password = "";
       }
-      if( params.password !== "" && params.password !== null){
+      if (params.password !== "" && params.password !== null) {
         params.password = crypto
-        .createHash("md5")
-        .update(`${_start}.${params.password}.${_end}`)
-        .digest("hex");
+          .createHash("md5")
+          .update(`${_start}.${params.password}.${_end}`)
+          .digest("hex");
       }
-      console.log("password2:"+params.password);
+      console.log("password2:" + params.password);
+      return new Promise((resolve, reject) => {
+        addsystemuser(params)
+          .then(response => {
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
+
+    EditAdminUser({ commit, state }, params) {
+      console.log("password:" + params.password);
+      if (params.password === "undefined") {
+        params.password = "";
+      }
+      if (params.password !== "" && params.password !== null) {
+        params.password = crypto
+          .createHash("md5")
+          .update(`${_start}.${params.password}.${_end}`)
+          .digest("hex");
+      }
+      console.log("password2:" + params.password);
       return new Promise((resolve, reject) => {
         editsystemuser(params)
           .then(response => {

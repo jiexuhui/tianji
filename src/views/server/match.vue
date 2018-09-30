@@ -56,16 +56,24 @@
       </el-table-column>
       <el-table-column align="center" label="参赛队伍" prop = "tname">
       </el-table-column>
-      <el-table-column align="center" label="左侧队伍" prop = "leftteam">
+      <el-table-column align="center" label="左侧塔数" prop = "ltower">
       </el-table-column>
-      <el-table-column align="center" label="左侧比分" prop = "leftscore">
+      <el-table-column align="center" label="右侧塔数" prop = "rtower">
       </el-table-column>
-      <el-table-column align="center" label="右侧队伍" prop = "rightteam">
+      <el-table-column align="center" label="左侧经济" prop = "lmoney">
       </el-table-column>
-      <el-table-column align="center" label="右侧比分" prop = "rightscore">
+      <el-table-column align="center" label="右侧经济" prop = "rmoney">
       </el-table-column>
-      <el-table-column align="center" label="排序" prop = "sort">
+      <el-table-column align="center" label="左侧龙" prop = "ldragon">
       </el-table-column>
+      <el-table-column align="center" label="右侧龙" prop = "rdragon">
+      </el-table-column>
+      <el-table-column align="center" label="左侧击杀" prop = "lkill">
+      </el-table-column>
+      <el-table-column align="center" label="右侧击杀" prop = "rkill">
+      </el-table-column>
+      <!-- <el-table-column align="center" label="排序" prop = "sort">
+      </el-table-column> -->
       <el-table-column align="center" label="场次" prop = "whitch">
         <template slot-scope="scope">
           <span>第{{scope.row.whitch}}场，共{{scope.row.many}}场</span>
@@ -123,23 +131,29 @@
         <el-form-item label="第几场" prop="whitch">
           <el-input type="number" v-model="temp.whitch"></el-input>
         </el-form-item>
-        <el-form-item label="左侧队伍" prop="leftteam">
-          <el-select class="filter-item" v-model="temp.leftteam" placeholder="左侧队伍" >
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="左侧塔数" prop="ltower">
+          <el-input type="number" v-model="temp.ltower"></el-input>
         </el-form-item>
-        <el-form-item label="左侧比分" prop="leftscore">
-          <el-input type="number" v-model="temp.leftscore"></el-input>
+        <el-form-item label="右侧塔数" prop="rtower">
+          <el-input type="number" v-model="temp.rtower"></el-input>
         </el-form-item>
-        <el-form-item label="右侧队伍" prop="rightteam">
-          <el-select class="filter-item" v-model="temp.rightteam" placeholder="右侧队伍">
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="左侧经济" prop="lmoney">
+          <el-input type="number" v-model="temp.lmoney"></el-input>
         </el-form-item>
-        <el-form-item label="右侧比分" prop="rightscore">
-          <el-input type="number" v-model="temp.rightscore"></el-input>
+        <el-form-item label="右侧经济" prop="rmoney">
+          <el-input type="number" v-model="temp.rmoney"></el-input>
+        </el-form-item>
+        <el-form-item label="左侧龙" prop="ldragon">
+          <el-input type="number" v-model="temp.ldragon"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧龙" prop="rdragon">
+          <el-input type="number" v-model="temp.rdragon"></el-input>
+        </el-form-item>
+        <el-form-item label="左侧击杀" prop="lkill">
+          <el-input type="number" v-model="temp.lkill"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧击杀" prop="rkill">
+          <el-input type="number" v-model="temp.rkill"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select class="filter-item" v-model="temp.status" placeholder="状态">
