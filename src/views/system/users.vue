@@ -16,7 +16,7 @@
         </el-option>
       </el-select> -->
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">{{$t('table.search')}}</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit"  v-if="myrole=='admin'">{{$t('table.add')}}</el-button>
       <!-- <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download" @click="handleDownload">{{$t('table.export')}}</el-button> -->
       <!-- <el-checkbox class="filter-item" style='margin-left:15px;' @change='tableKey=tableKey+1' v-model="showReviewer">{{$t('table.reviewer')}}</el-checkbox> -->
     </div>
@@ -194,6 +194,7 @@ export default {
       },
       downloadLoading: false,
       role: [],
+      myrole: "",
       selectRole: {}
     };
   },
@@ -219,6 +220,8 @@ export default {
         this.list = response.data[0];
         this.total = response.data[1][0].count;
         this.role = response.data[2];
+        this.myrole = this.$store.getters.roles;
+        console.log("role", this.myrole);
         this.listLoading = false;
       });
     },

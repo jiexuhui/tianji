@@ -37,7 +37,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="关联比赛">
+      <el-table-column align="center" label="关联比赛">
         <template slot-scope="scope">
           <span>{{scope.row.matchname}}</span>
         </template>
@@ -55,7 +55,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column min-width="300px" align="center" label="标题">
+      <el-table-column min-width="200px" align="center" label="标题">
         <template slot-scope="scope">
 
           <!-- <router-link class="link-type" :to="'/server/editArticle?id='+scope.row.id"> -->
