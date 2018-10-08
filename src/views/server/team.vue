@@ -20,7 +20,6 @@
             </el-option>
           </el-select>
         </el-form-item> -->
-        </el-form-item> -->
          <el-form-item label="类型">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
             <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -59,11 +58,16 @@
           <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.logo" width="40" height="40"/>
         </template>
       </el-table-column>
-      <el-table-column align="center"  min-width="150" label="状态">
+      <el-table-column align="center"  min-width="150" label="宣传图" prop = "pic">
+        <template slot-scope="scope">
+          <img class="link-type" @click="handlePicUpload(scope.row)" :src="scope.row.pic" width="40" height="40"/>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center"  min-width="150" label="状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 0? "正常": "关闭"}}</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center"  min-width="150" label="type">
         <template slot-scope="scope">
           <el-tag type="success">{{scope.row.type | typeFilter}}</el-tag>
@@ -104,11 +108,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="类型" prop="type">
+        <!-- <el-form-item label="类型" prop="type">
           <el-radio-group v-model="temp.type">
             <el-radio-button v-for="item in typeOptions" :label="item.value">{{item.label}}</el-radio-button>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="temp.status">
             <el-radio-button v-for="item in statusOptions" :label="item.value">{{item.label}}</el-radio-button>
@@ -122,7 +126,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="上传图片" :visible.sync="uploaddialogFormVisible">
+    <el-dialog title="上传LOGO" :visible.sync="uploaddialogFormVisible">
       <el-form :rules="rules" ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
           <el-upload
             class="upload"
@@ -146,11 +150,36 @@
         <!-- <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button> -->
       </div>
     </el-dialog>
+
+    <el-dialog title="上传宣传图" :visible.sync="uploadPicFormVisible">
+      <el-form :rules="rules" ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
+          <el-upload
+            class="upload"
+            ref="upload"
+            action=""
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-upload="beforeuploadpic" 
+            :file-list="fileList"
+            :auto-upload="true"
+            list-type="picture">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+          <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="uploaddialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="uploadLogo">{{$t('table.confirm')}}</el-button>
+        <!-- <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button> -->
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { list, add, edit, del, upload } from "@/api/team";
+import { list, add, edit, del, upload, uploadPic } from "@/api/team";
 import waves from "@/directive/waves"; // 水波纹指令
 import elDragDialog from "@/directive/el-dragDialog";
 
@@ -213,6 +242,7 @@ export default {
         game: [{ required: true, message: "请输入游戏名称", trigger: "blur" }]
       },
       uploaddialogFormVisible: false,
+      uploadPicFormVisible: false,
       fileList: [],
       file: {}
     };
@@ -429,6 +459,41 @@ export default {
       });
       return false;
     },
+    handlePicUpload(row) {
+      this.fileList = [];
+      // console.log("row", row);
+      this.temp = Object.assign({}, row);
+      this.file.name = row.name + "-宣传图";
+      if (row.pic !== "" && row.pic !== null) {
+        this.file.url = row.pic;
+        this.fileList.push(this.file);
+      }
+      this.uploadPicFormVisible = true;
+    },
+    beforeuploadpic(file) {
+      if (this.fileList.length === 1) {
+        this.$message.error("只能上传一张宣传图哦~");
+        return;
+      }
+      console.log("beforefile:", file);
+      let param = new FormData(); // 创建form对象
+      param.append("file", file, file.name); // file对象是 beforeUpload参数
+      let config = {
+        headers: { "Content-Type": "multipart/form-data" }
+      };
+      uploadPic(param).then(res => {
+        if (res.code === 200 && res.data) {
+          console.log(res);
+          this.file = {};
+          this.file.name = res.data.name;
+          this.temp.pic = res.data.url;
+          this.file.url = res.data.url;
+          this.fileList.push(this.file);
+          console.log("this.fileList:", this.fileList);
+        }
+      });
+      return false;
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
@@ -447,6 +512,7 @@ export default {
             }
           }
           this.uploaddialogFormVisible = false;
+          this.uploadPicFormVisible = false;
           this.$notify({
             title: "成功",
             message: "更新成功",

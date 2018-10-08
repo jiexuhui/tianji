@@ -19,3 +19,7 @@ export function del(params) {
 export function upload(params) {
   return request.post("/admin/team/upload", params);
 }
+
+export function uploadPic(params) {
+  return request.post("/admin/team/uploadPic", params);
+}

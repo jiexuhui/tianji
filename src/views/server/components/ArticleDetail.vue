@@ -87,7 +87,12 @@
         </el-form-item> -->
 
         <div class="editor-container">
-          <Tinymce :height=400 ref="editor" v-model="postForm.content" />
+          <el-input
+            type="textarea"
+            :rows="5"
+            placeholder="请输入内容"
+            v-model="postForm.content">
+          </el-input>
         </div>
 
         <!-- <div style="margin-bottom: 20px;">
