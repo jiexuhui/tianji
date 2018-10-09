@@ -41,7 +41,7 @@
 
                 <el-col :span="8">
                   <el-form-item label="状态">
-                    <el-select class="filter-item" v-model="postForm.status" placeholder="请选择">
+                    <el-select class="filter-item" v-model="postForm.status" placeholder="请选择" clearable>
                       <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
                       </el-option>
                     </el-select>
@@ -50,7 +50,7 @@
 
                 <el-col :span="8">
                   <el-form-item label="tag">
-                    <el-select class="filter-item" v-model="postForm.tag" placeholder="请选择">
+                    <el-select class="filter-item" v-model="postForm.tag" placeholder="请选择" clearable>
                       <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value">
                       </el-option>
                     </el-select>
@@ -59,7 +59,7 @@
 
                 <el-col :span="8">
                   <el-form-item label="关联比赛">
-                    <el-select class="filter-item" v-model="postForm.matchid" placeholder="请选择">
+                    <el-select class="filter-item" v-model="postForm.matchid" placeholder="请选择" clearable>
                       <el-option v-for="item in matchs" :key="item.id" :label="item.name" :value="item.id">
                           <span style="float: left">{{ item.name }}</span>
                           <span style="float: right; color: #8492a6; font-size: 13px">{{ item.id }}</span>
@@ -86,14 +86,18 @@
           <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
         </el-form-item> -->
 
-        <div class="editor-container">
+        <!-- <div class="editor-container">
           <el-input
             type="textarea"
             :rows="5"
             placeholder="请输入内容"
             v-model="postForm.content">
           </el-input>
+        </div> -->
+        <div class="editor-container">
+          <Tinymce :height=400 ref="editor" v-model="postForm.content" />
         </div>
+        <div class="editor-content" v-html="postForm.content"></div>
 
         <!-- <div style="margin-bottom: 20px;">
           <Upload v-model="postForm.image_uri" />
@@ -216,10 +220,11 @@ export default {
   },
   created() {
     if (this.isEdit) {
+      this.fetchData;
       this.postForm = Object.assign({}, this.$route.params);
       this.matchs = this.postForm.matchs;
       // const id = this.$route.params && this.$route.params.id;
-      // this.fetchData(id);
+      this.fetchData(this.postForm.id);
       console.log("postForm:", this.postForm);
     } else {
       this.matchs = this.$route.params.matchs;
@@ -230,10 +235,10 @@ export default {
     fetchData(id) {
       fetchArticle(id)
         .then(response => {
-          this.postForm = response.data;
+          this.postForm = response.data[0];
           // Just for test
-          this.postForm.title += `   Article Id:${this.postForm.id}`;
-          this.postForm.content_short += `   Article Id:${this.postForm.id}`;
+          // this.postForm.title += `   Article Id:${this.postForm.id}`;
+          // this.postForm.content_short += `   Article Id:${this.postForm.id}`;
         })
         .catch(err => {
           console.log(err);

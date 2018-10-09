@@ -14,12 +14,12 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="状态">
+        <el-form-item label="状态">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
             <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
          <el-form-item label="类型">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
             <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -63,11 +63,11 @@
           <img class="link-type" @click="handlePicUpload(scope.row)" :src="scope.row.pic" width="40" height="40"/>
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center"  min-width="150" label="状态">
+      <el-table-column align="center"  min-width="150" label="状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 0? "正常": "关闭"}}</el-tag>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column align="center"  min-width="150" label="type">
         <template slot-scope="scope">
           <el-tag type="success">{{scope.row.type | typeFilter}}</el-tag>
@@ -171,7 +171,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="uploaddialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="uploadLogo">{{$t('table.confirm')}}</el-button>
+        <el-button type="primary" @click="uploadPic">{{$t('table.confirm')}}</el-button>
         <!-- <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button> -->
       </div>
     </el-dialog>
@@ -497,11 +497,35 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
+      this.file.url = "";
     },
     handlePreview(file) {
       console.log(file);
     },
     uploadLogo() {
+      this.temp.logo = this.file.url;
+      edit(this.temp).then(res => {
+        if (res.code == 200) {
+          for (const v of this.list) {
+            if (v.id === this.temp.id) {
+              const index = this.list.indexOf(v);
+              this.list.splice(index, 1, this.temp);
+              break;
+            }
+          }
+          this.uploaddialogFormVisible = false;
+          this.uploadPicFormVisible = false;
+          this.$notify({
+            title: "成功",
+            message: "更新成功",
+            type: "success",
+            duration: 2000
+          });
+        }
+      });
+    },
+    uploadPic() {
+      this.temp.pic = this.file.url;
       edit(this.temp).then(res => {
         if (res.code == 200) {
           for (const v of this.list) {
