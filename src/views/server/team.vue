@@ -115,7 +115,7 @@
         </el-form-item> -->
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="temp.status">
-            <el-radio-button v-for="item in statusOptions" :label="item.value">{{item.label}}</el-radio-button>
+            <el-radio-button v-for="item in statusOptions" :label="item.value" :key="item.value">{{item.label}}</el-radio-button>
           </el-radio-group>
         </el-form-item>
       </el-form>

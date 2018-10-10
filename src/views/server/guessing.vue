@@ -76,7 +76,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="时间">
+        <el-form-item label="时间" prop="date">
           <el-date-picker
             v-model="temp.date"
             type="date"
@@ -145,7 +145,7 @@ export default {
         answer1: "",
         answer2: "",
         right: 0,
-        date: ""
+        date: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -155,8 +155,12 @@ export default {
       },
       rules: {
         title: [{ required: true, message: "请输入竞猜标题", trigger: "blur" }],
-        answer1: [{ required: true, message: "请输入左侧选项", trigger: "blur" }],
-        answer2: [{ required: true, message: "请输入右侧选项", trigger: "blur" }],
+        answer1: [
+          { required: true, message: "请输入左侧选项", trigger: "blur" }
+        ],
+        answer2: [
+          { required: true, message: "请输入右侧选项", trigger: "blur" }
+        ],
         date: [{ required: true, message: "请输入时间", trigger: "blur" }]
       },
       uploaddialogFormVisible: false,
@@ -230,7 +234,7 @@ export default {
       this.$refs.dataForm && this.$refs.dataForm.resetFields();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
-      
+
       this.$nextTick(() => {
         this.$refs["dataForm"].clearValidate();
       });
@@ -378,7 +382,7 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
-      this.file.url = ""
+      this.file.url = "";
     },
     handlePreview(file) {
       console.log(file);
