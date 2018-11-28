@@ -1,10 +1,24 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">{{$t('table.add')}}</el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        @click="handleCreate"
+        type="primary"
+        icon="el-icon-edit"
+      >{{$t('table.add')}}</el-button>
     </div>
-    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%">
+    <el-table
+      :key="tableKey"
+      :data="list"
+      v-loading="listLoading"
+      element-loading-text="给我一点时间"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
       <el-table-column align="center" :label="$t('table.id')" width="65">
         <template slot-scope="scope">
           <span>{{scope.row.id}}</span>
@@ -20,31 +34,62 @@
           <span>{{scope.row.utime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="230" class-name="small-padding fixed-width">
+      <el-table-column
+        align="center"
+        :label="$t('table.actions')"
+        width="230"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button type="success" size="mini" @click="handleModifyStatus(scope.row)">授权
-          </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
-          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+          >{{$t('table.edit')}}</el-button>
+          <el-button type="success" size="mini" @click="handleModifyStatus(scope.row)">授权</el-button>
+          <el-button
+            v-if="scope.row.status!='deleted'"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+          >{{$t('table.delete')}}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="listQuery.page"
+        :page-sizes="[10,20,30, 50]"
+        :page-size="listQuery.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="角色" prop="rolename" >
+      <el-form
+        :rules="rules"
+        ref="dataForm"
+        :model="temp"
+        label-position="left"
+        label-width="70px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="角色" prop="rolename">
           <el-input v-model="temp.rolename"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button
+          v-if="dialogStatus=='create'"
+          type="primary"
+          @click="createData"
+        >{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -56,8 +101,8 @@
         node-key="id"
         ref="tree"
         highlight-current
-        :props="defaultProps">
-      </el-tree>
+        :props="defaultProps"
+      ></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="pubdialogFormVisible = false">{{$t('table.cancel')}}</el-button>
         <el-button type="primary" @click="modifyUserPerssion">{{$t('table.confirm')}}</el-button>
@@ -174,8 +219,10 @@ export default {
       });
     },
     modifyUserPerssion() {
-      const menuids = this.$refs.tree.getCheckedKeys();
-      console.log("keys:", this.$refs.tree.getCheckedKeys());
+      const menuids = this.$refs.tree.getCheckedKeys(false);
+      const halfchecks = this.$refs.tree.getHalfCheckedKeys();
+      menuids.push.apply(menuids, halfchecks);
+      console.log("menuids:", menuids);
       this.modifyparams.menuids = menuids;
       console.log("modifyparams:", this.modifyparams);
       userpermission(this.modifyparams).then(res => {
