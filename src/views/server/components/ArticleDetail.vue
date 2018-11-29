@@ -1,68 +1,106 @@
 <template>
   <div class="createPost-container">
     <el-form class="form-container" :model="postForm" :rules="rules" ref="postForm">
-
       <sticky :className="'sub-navbar '+postForm.status">
         <!-- <CommentDropdown v-model="postForm.comment_disabled" />
         <PlatformDropdown v-model="postForm.platforms" />
-        <SourceUrlDropdown v-model="postForm.source_uri" /> -->
-        <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">{{this.isEdit?"修改":"创建" }}
-        </el-button>
+        <SourceUrlDropdown v-model="postForm.source_uri" />-->
+        <el-button
+          v-loading="loading"
+          style="margin-left: 10px;"
+          type="success"
+          @click="submitForm"
+        >{{this.isEdit?"修改":"创建" }}</el-button>
         <!-- <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button> -->
       </sticky>
 
       <div class="createPost-main-container">
         <el-row>
-
           <!-- <Warning /> -->
-
           <el-col :span="21">
             <el-form-item style="margin-bottom: 40px;" prop="title">
-              <MDinput name="name" v-model="postForm.title" required :maxlength="100" :disabled="this.isEdit?true:false">
-                标题
-              </MDinput>
+              <MDinput name="name" v-model="postForm.title" required :maxlength="100">标题</MDinput>
             </el-form-item>
 
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
                   <el-form-item label-width="45px" label="作者:" class="postInfo-container-item">
-                     <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.author">
-                      </el-input>
+                    <el-input
+                      type="textarea"
+                      class="article-textarea"
+                      :rows="1"
+                      autosize
+                      placeholder="请输入内容"
+                      v-model="postForm.author"
+                    ></el-input>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="8">
                   <el-form-item label-width="80px" label="时间:" class="postInfo-container-item">
-                    <el-date-picker v-model="postForm.date" type="datetime" format="yyyy-MM-dd" placeholder="选择日期" value-format="yyyy-MM-dd">
-                    </el-date-picker>
+                    <el-date-picker
+                      v-model="postForm.date"
+                      type="datetime"
+                      format="yyyy-MM-dd"
+                      placeholder="选择日期"
+                      value-format="yyyy-MM-dd"
+                    ></el-date-picker>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="8">
                   <el-form-item label="状态">
-                    <el-select class="filter-item" v-model="postForm.status" placeholder="请选择" clearable>
-                      <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
-                      </el-option>
+                    <el-select
+                      class="filter-item"
+                      v-model="postForm.status"
+                      placeholder="请选择"
+                      clearable
+                    >
+                      <el-option
+                        v-for="item in statusOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="8">
                   <el-form-item label="tag">
-                    <el-select class="filter-item" v-model="postForm.tag" placeholder="请选择" clearable>
-                      <el-option v-for="item in tagOptions" :key="item.value" :label="item.label" :value="item.value">
-                      </el-option>
+                    <el-select
+                      class="filter-item"
+                      v-model="postForm.tag"
+                      placeholder="请选择"
+                      clearable
+                    >
+                      <el-option
+                        v-for="item in tagOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="8">
                   <el-form-item label="关联比赛">
-                    <el-select class="filter-item" v-model="postForm.matchid" placeholder="请选择" clearable>
-                      <el-option v-for="item in matchs" :key="item.id" :label="item.name" :value="item.id">
-                          <span style="float: left">{{ item.name }}</span>
-                          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.id }}</span>
+                    <el-select
+                      class="filter-item"
+                      v-model="postForm.matchid"
+                      placeholder="请选择"
+                      clearable
+                    >
+                      <el-option
+                        v-for="item in matchs"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      >
+                        <span style="float: left">{{ item.name }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.id }}</span>
                       </el-option>
                     </el-select>
                   </el-form-item>
@@ -74,7 +112,7 @@
                       :high-threshold="3">
                     </el-rate>
                   </el-form-item>
-                </el-col> -->
+                </el-col>-->
               </el-row>
             </div>
           </el-col>
@@ -84,8 +122,7 @@
           <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.content_short">
           </el-input>
           <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
-        </el-form-item> -->
-
+        </el-form-item>-->
         <!-- <div class="editor-container">
           <el-input
             type="textarea"
@@ -93,18 +130,17 @@
             placeholder="请输入内容"
             v-model="postForm.content">
           </el-input>
-        </div> -->
+        </div>-->
         <div class="editor-container">
-          <Tinymce :height=400 ref="editor" v-model="postForm.content" />
+          <Tinymce :height="400" ref="editor" v-model="postForm.content"/>
         </div>
         <div class="editor-content" v-html="postForm.content"></div>
 
         <!-- <div style="margin-bottom: 20px;">
           <Upload v-model="postForm.image_uri" />
-        </div> -->
+        </div>-->
       </div>
     </el-form>
-
   </div>
 </template>
 
