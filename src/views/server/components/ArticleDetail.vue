@@ -86,7 +86,7 @@
                 </el-col>
 
                 <el-col :span="8">
-                  <el-form-item label="关联比赛">
+                  <el-form-item label="关联游戏">
                     <el-select
                       class="filter-item"
                       v-model="postForm.matchid"
