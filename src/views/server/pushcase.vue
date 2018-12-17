@@ -45,6 +45,24 @@
       highlight-current-row
       style="width: 100%"
     >
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="比赛">
+              <span>{{ scope.row.matchname }}</span>
+            </el-form-item>
+            <el-form-item label="推荐买点">
+              <span>{{ scope.row.title }}</span>
+            </el-form-item>
+            <el-form-item label="推荐理由">
+              <span>{{ scope.row.content }}</span>
+            </el-form-item>
+            <el-form-item label="推荐答案">
+              <span>{{ scope.row.authanswer }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column align="center" :label="$t('table.id')" width="65">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
@@ -53,12 +71,12 @@
       <el-table-column align="center" label="单子ID" prop="id"></el-table-column>
       <el-table-column align="center" label="用户昵称" prop="nickName"></el-table-column>
       <el-table-column align="center" label="比赛ID" prop="matchid"></el-table-column>
-      <el-table-column align="center" label="比赛" prop="matchname"></el-table-column>
+      <!-- <el-table-column align="center" label="比赛" prop="matchname"></el-table-column> -->
       <el-table-column align="center" label="队伍1" prop="team1"></el-table-column>
       <el-table-column align="center" label="队伍2" prop="team2"></el-table-column>
       <el-table-column align="center" label="价格" prop="price"></el-table-column>
       <el-table-column align="center" label="推荐答案" prop="authanswer"></el-table-column>
-      <el-table-column align="center" label="推荐理由" prop="content"></el-table-column>
+      <!-- <el-table-column align="center" label="推荐理由" prop="content"></el-table-column> -->
       <el-table-column align="center" label="结果" prop="right">
         <template slot-scope="scope">
           <span v-for="item in rightOptions">
@@ -148,7 +166,20 @@
     </el-dialog>
   </div>
 </template>
-
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>
 <script>
 import { list, edit, settlement } from "@/api/pushcase";
 import { parseTime } from "@/utils/index";

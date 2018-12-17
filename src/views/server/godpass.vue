@@ -6,54 +6,86 @@
           <el-input placeholder="昵称" v-model="listQuery.name"></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.pass" placeholder="审核状态">
-            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.pass"
+            placeholder="审核状态"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search"  @click="handleFilter">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%">
+    <el-table
+      :key="tableKey"
+      :data="list"
+      v-loading="listLoading"
+      element-loading-text="给我一点时间"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
       <el-table-column align="center" :label="$t('table.id')" width="65">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center"  label="用户ID" prop = "id">
-      </el-table-column>
-      <el-table-column align="center" label="昵称" width="150px" prop = "nickName">
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="头像" prop = "avatarUrl">
+      <el-table-column align="center" label="用户ID" prop="id"></el-table-column>
+      <el-table-column align="center" label="昵称" width="150px" prop="nickName"></el-table-column>
+      <el-table-column align="center" min-width="150" label="头像" prop="avatarUrl">
         <template slot-scope="scope">
-          <img :src="scope.row.avatarUrl" width="40" height="40"/>
+          <img :src="scope.row.avatarUrl" width="40" height="40">
         </template>
       </el-table-column>
-      <el-table-column align="center"  min-width="150" label="申请状态">
+      <el-table-column align="center" min-width="150" label="申请状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.god === 1? "申请中": "已通过"}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center"  min-width="150" label="申请时间">
+      <el-table-column align="center" min-width="150" label="申请时间">
         <template slot-scope="scope">
           <span>{{scope.row.gtime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="230" class-name="small-padding fixed-width">
+      <el-table-column
+        align="center"
+        :label="$t('table.actions')"
+        width="230"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status!='1'" size="mini" type="danger" @click="handlePass(scope.row)">
-            {{scope.row.god == 1?'通过':'撤销'}}
-          </el-button>
+          <el-button
+            v-if="scope.row.status!='1'"
+            size="mini"
+            type="danger"
+            @click="handlePass(scope.row)"
+          >{{scope.row.god == 1?'通过':'撤销'}}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="listQuery.page"
+        :page-sizes="[10,20,30, 50]"
+        :page-size="listQuery.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -160,7 +192,7 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       let params = {};
       params.uid = this.temp.id;
-      params.pass = this.temp.god == 1 ? 2 : 1;
+      params.pass = this.temp.god == 1 ? 2 : 0;
       const index = this.list.indexOf(row);
       this.$confirm("确定吗?", "提示", {
         confirmButtonText: "确定",

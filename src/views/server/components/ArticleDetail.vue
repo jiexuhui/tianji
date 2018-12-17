@@ -244,6 +244,10 @@ export default {
         {
           label: "置顶",
           value: 2
+        },
+        {
+          label: "推单认证",
+          value: 3
         }
       ],
       matchs: []

@@ -5,20 +5,46 @@
         <el-form-item label="标题">
           <el-input placeholder="标题" v-model="listQuery.name"></el-input>
         </el-form-item>
+        <el-form-item label="标签">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.tag"
+            placeholder="标签"
+          >
+            <el-option
+              v-for="item in tagOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search"  @click="handleFilter">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
           <!-- <router-link class="link-type" :to="'/server/createArticle'"> -->
-            <el-button
-              type="success"
-              icon="el-icon-circle-plus" style="margin-left: 0" @click="addpath({})">新增</el-button>
+          <el-button
+            type="success"
+            icon="el-icon-circle-plus"
+            style="margin-left: 0"
+            @click="addpath({})"
+          >新增</el-button>
           <!-- </router-link> -->
-           <!-- <el-button
+          <!-- <el-button
               type="success"
-              @click="handleCreate" icon="el-icon-circle-plus" style="margin-left: 0">新增</el-button> -->
+          @click="handleCreate" icon="el-icon-circle-plus" style="margin-left: 0">新增</el-button>-->
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
+    <el-table
+      :data="list"
+      v-loading.body="listLoading"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{scope.row.id}}</span>
@@ -43,15 +69,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center"  min-width="150" label="配图" prop = "image">
+      <el-table-column align="center" min-width="150" label="配图" prop="image">
         <template slot-scope="scope">
-          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.image" width="40" height="40"/>
+          <img
+            class="link-type"
+            @click="handleUpload(scope.row)"
+            :src="scope.row.image"
+            width="40"
+            height="40"
+          >
         </template>
       </el-table-column>
       <el-table-column width="120px" align="center" label="TAG">
         <template slot-scope="scope">
-          <el-tag  type="success" v-if="scope.row.tag == 1">热门</el-tag >
-          <el-tag type="success" v-if="scope.row.tag == 2">置顶</el-tag >
+          <el-tag type="success" v-if="scope.row.tag == 1">热门</el-tag>
+          <el-tag type="success" v-if="scope.row.tag == 2">置顶</el-tag>
         </template>
       </el-table-column>
 
@@ -59,8 +91,7 @@
         <template slot-scope="scope">
           <svg-icon v-for="n in +scope.row.importance" icon-class="star" class="meta-item__icon" :key="n"></svg-icon>
         </template>
-      </el-table-column> -->
-
+      </el-table-column>-->
       <el-table-column class-name="status-col" label="状态" align="center" width="110">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 0?"正常":"关闭"}}</el-tag>
@@ -69,50 +100,70 @@
 
       <el-table-column min-width="200px" align="center" label="标题">
         <template slot-scope="scope">
-
           <!-- <router-link class="link-type" :to="'/server/editArticle?id='+scope.row.id"> -->
-            <span class="link-type"  @click="detailpath(scope.row)">{{ scope.row.title }}</span>
+          <span class="link-type" @click="detailpath(scope.row)">{{ scope.row.title }}</span>
           <!-- </router-link> -->
         </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" align="center" prop= "ctime">
-      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="ctime"></el-table-column>
 
-      <el-table-column align="center" label="操作" >
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <!-- <router-link :to="'/server/editArticle'"> -->
-            <el-button type="primary" @click="detailpath(scope.row)" size="small" icon="el-icon-edit">编辑</el-button>
+          <el-button
+            type="primary"
+            @click="detailpath(scope.row)"
+            size="small"
+            icon="el-icon-edit"
+          >编辑</el-button>
           <!-- </router-link> -->
-          <el-button  size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row)">{{$t('table.delete')}}
-          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+          >{{$t('table.delete')}}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page"
-        :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="listQuery.page"
+        :page-sizes="[10,20,30, 50]"
+        :page-size="listQuery.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </div>
 
     <el-dialog title="上传banner" :visible.sync="uploaddialogFormVisible">
-      <el-form ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
-          <el-upload
-            class="upload"
-            ref="upload"
-            action=""
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-upload="beforeupload" 
-            :file-list="fileList"
-            :auto-upload="true"
-            list-type="picture">
-            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-          </el-upload>
-          <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
+      <el-form
+        ref="dialogForm"
+        label-position="left"
+        label-width="80px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-upload
+          class="upload"
+          ref="upload"
+          action
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-upload="beforeupload"
+          :file-list="fileList"
+          :auto-upload="true"
+          list-type="picture"
+        >
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+        <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="uploaddialogFormVisible = false">{{$t('table.cancel')}}</el-button>
@@ -141,7 +192,21 @@ export default {
       matchs: [],
       uploaddialogFormVisible: false,
       fileList: [],
-      file: {}
+      file: {},
+      tagOptions: [
+        {
+          label: "热门",
+          value: 1
+        },
+        {
+          label: "置顶",
+          value: 2
+        },
+        {
+          label: "推单认证",
+          value: 3
+        }
+      ]
     };
   },
   filters: {
@@ -259,7 +324,7 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.fileList = fileList;
-      this.file.url = ""
+      this.file.url = "";
     },
     handlePreview(file) {
       console.log(file);
@@ -284,7 +349,7 @@ export default {
           });
         }
       });
-    },
+    }
   }
 };
 </script>
