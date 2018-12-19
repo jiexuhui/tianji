@@ -8,68 +8,120 @@
         <el-form-item label="比赛名称">
           <el-input placeholder="比赛名称" v-model="listQuery.name"></el-input>
         </el-form-item>
-         <el-form-item label="游戏">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.gameid" placeholder="游戏">
-            <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
-            </el-option>
+        <el-form-item label="游戏">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.gameid"
+            placeholder="游戏"
+          >
+            <el-option
+              v-for="item in gameOptions"
+              :key="item.id"
+              :label="item.game"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
-            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.status"
+            placeholder="状态"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
-         <!-- <el-form-item label="类型">
+        <!-- <el-form-item label="类型">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
             <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search"  @click="handleFilter">搜索</el-button>
-           <el-button
-              type="success"
-              @click="handleCreate" icon="el-icon-circle-plus" style="margin-left: 0">新增</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+          <el-button
+            type="success"
+            @click="handleCreate"
+            icon="el-icon-circle-plus"
+            style="margin-left: 0"
+          >新增</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%">
+    <el-table
+      :key="tableKey"
+      :data="list"
+      v-loading="listLoading"
+      element-loading-text="给我一点时间"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="赛事ID">
+              <span>{{ scope.row.id }}</span>
+            </el-form-item>
+            <el-form-item label="参赛队伍">
+              <span>{{ scope.row.tname }}</span>
+            </el-form-item>
+            <el-form-item label="LOGO">
+              <img
+                class="link-type"
+                @click="handleUpload(scope.row)"
+                :src="scope.row.image"
+                width="40"
+                height="40"
+              >
+            </el-form-item>
+            <el-form-item label="推荐答案">
+              <span>{{ scope.row.authanswer }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column align="center" :label="$t('table.id')" width="65">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center"  label="ID" prop = "id">
-      </el-table-column>
-      <el-table-column align="center" label="名称" prop="name">
-      </el-table-column>
-      <el-table-column align="center" label="描述" prop="desc" >
-      </el-table-column>
-      <el-table-column align="center" label="参赛队伍" prop = "tname">
-      </el-table-column>
-      <el-table-column align="center" label="所属游戏" prop = "game">
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="logo" prop = "image">
+      <!-- <el-table-column align="center" label="ID" prop="id"></el-table-column> -->
+      <el-table-column align="center" label="名称" prop="name"></el-table-column>
+      <el-table-column align="center" label="描述" prop="desc"></el-table-column>
+      <!-- <el-table-column align="center" label="参赛队伍" prop="tname"></el-table-column> -->
+      <el-table-column align="center" label="所属游戏" prop="game"></el-table-column>
+      <!-- <el-table-column align="center" min-width="150" label="logo" prop="image">
         <template slot-scope="scope">
-          <img class="link-type" @click="handleUpload(scope.row)" :src="scope.row.image" width="40" height="40"/>
+          <img
+            class="link-type"
+            @click="handleUpload(scope.row)"
+            :src="scope.row.image"
+            width="40"
+            height="40"
+          >
         </template>
-      </el-table-column>
-      <el-table-column align="center" label="场次" prop = "whitch">
+      </el-table-column>-->
+      <el-table-column align="center" label="场次" prop="whitch">
         <template slot-scope="scope">
           <span>共{{scope.row.many}}场,正在进行第{{scope.row.whitch}}场</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="左侧队伍" prop = "lteam">
-      </el-table-column>
-      <el-table-column align="center" label="左侧比分" prop = "lscore">
-      </el-table-column>
-      <el-table-column align="center" label="右侧队伍" prop = "rteam">
-      </el-table-column>
-      <el-table-column align="center" label="右侧比分" prop = "rscore">
-      </el-table-column>
-      <el-table-column align="center" label="状态" prop = "status">
+      <el-table-column align="center" label="左侧队伍" prop="ltname"></el-table-column>
+      <el-table-column align="center" label="左侧比分" prop="lscore"></el-table-column>
+      <el-table-column align="center" label="右侧队伍" prop="rtname"></el-table-column>
+      <el-table-column align="center" label="右侧比分" prop="rscore"></el-table-column>
+      <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="scope">
           <span v-if="scope.row.status == 0">活动标识</span>
           <span v-if="scope.row.status == 1">未开始</span>
@@ -77,54 +129,89 @@
           <span v-if="scope.row.status == 3">已结束</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="开始时间" prop = "stime">
+      <el-table-column align="center" label="开始时间" prop="stime">
         <template slot-scope="scope">
-            <span>{{formatTime(scope.row.stime)}}</span>
+          <span>{{formatTime(scope.row.stime)}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="结束时间" prop = "etime">
+      <!-- <el-table-column align="center" label="结束时间" prop="etime">
         <template slot-scope="scope">
-            <span>{{formatTime(scope.row.etime)}}</span>
+          <span>{{formatTime(scope.row.etime)}}</span>
         </template>
-      </el-table-column>
-      <el-table-column align="center"  min-width="150" label="创建时间">
+      </el-table-column>-->
+      <!-- <el-table-column align="center" min-width="150" label="创建时间">
         <template slot-scope="scope">
           <span>{{formatTime(scope.row.ctime)}}</span>
         </template>
-      </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="230" class-name="small-padding fixed-width">
+      </el-table-column>-->
+      <el-table-column
+        align="center"
+        :label="$t('table.actions')"
+        width="230"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(scope.row)">{{$t('table.delete')}}
-          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+          >{{$t('table.edit')}}</el-button>
+          <el-button
+            v-if="scope.row.status!='deleted'"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+          >{{$t('table.delete')}}</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="listQuery.page"
+        :page-sizes="[10,20,30, 50]"
+        :page-size="listQuery.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog  :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="赛事名称" prop="name" >
+    <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog :visible.sync="dialogFormVisible">
+      <el-form
+        :rules="rules"
+        ref="dataForm"
+        :model="temp"
+        label-position="left"
+        label-width="100px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="赛事名称" prop="name">
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="desc" >
+        <el-form-item label="描述" prop="desc">
           <el-input v-model="temp.desc"></el-input>
         </el-form-item>
         <el-form-item label="所属游戏" prop="gameid">
           <el-select class="filter-item" v-model="temp.gameid" placeholder="游戏">
-            <el-option v-for="item in gameOptions" :key="item.id" :label="item.game" :value="item.id">
-            </el-option>
+            <el-option
+              v-for="item in gameOptions"
+              :key="item.id"
+              :label="item.game"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="参赛队伍" prop="teams">
           <el-select class="filter-item" v-model="temp.teams" placeholder="参赛队伍" multiple>
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
+            <el-option
+              v-for="item in teamOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="共几场" prop="many">
@@ -134,9 +221,13 @@
           <el-input type="number" v-model="temp.whitch"></el-input>
         </el-form-item>
         <el-form-item label="左侧队伍" prop="lteam">
-          <el-select class="filter-item" v-model="temp.lteam" placeholder="左侧队伍" >
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
+          <el-select class="filter-item" v-model="temp.lteam" placeholder="左侧队伍">
+            <el-option
+              v-for="item in teamOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="左侧比分" prop="lscore">
@@ -144,8 +235,12 @@
         </el-form-item>
         <el-form-item label="右侧队伍" prop="rteam">
           <el-select class="filter-item" v-model="temp.rteam" placeholder="右侧队伍">
-            <el-option v-for="item in teamOptions" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
+            <el-option
+              v-for="item in teamOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="右侧比分" prop="rscore">
@@ -153,8 +248,12 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select class="filter-item" v-model="temp.status" placeholder="状态">
-            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="stime" label="开始时间">
@@ -163,43 +262,54 @@
             type="datetime"
             placeholder="选择日期时间"
             default-time="12:00:00"
-            value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
         </el-form-item>
-         <el-form-item prop="etime" label="结束时间">
+        <el-form-item prop="etime" label="结束时间">
           <el-date-picker
             v-model="temp.etime"
             type="datetime"
             placeholder="选择日期时间"
             default-time="18:00:00"
-            value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button
+          v-if="dialogStatus=='create'"
+          type="primary"
+          @click="createData"
+        >{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="上传图片" :visible.sync="uploaddialogFormVisible">
-      <el-form :rules="rules" ref="dialogForm" label-position="left" label-width="80px" style='width: 400px; margin-left:50px;'>
-          <el-upload
-            class="upload"
-            ref="upload"
-            action=""
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-upload="beforeupload" 
-            :file-list="fileList"
-            :auto-upload="true"
-            list-type="picture">
-            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-          </el-upload>
-          <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
+      <el-form
+        :rules="rules"
+        ref="dialogForm"
+        label-position="left"
+        label-width="80px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-upload
+          class="upload"
+          ref="upload"
+          action
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-upload="beforeupload"
+          :file-list="fileList"
+          :auto-upload="true"
+          list-type="picture"
+        >
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+        <!-- <el-progress v-show="showProgress" :text-inside="true" :stroke-width="15" :percentage="percentage"></el-progress> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="uploaddialogFormVisible = false">{{$t('table.cancel')}}</el-button>
@@ -390,7 +500,8 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
       console.log("this.temp.teams11", row);
-      this.temp.teams = this.temp.teams.split(",").map(Number);
+      this.temp.teams =
+        this.temp.teams != null ? this.temp.teams.split(",").map(Number) : "";
       console.log("this.temp.teams", this.temp.teams);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;

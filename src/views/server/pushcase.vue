@@ -138,7 +138,7 @@
         label-width="100px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="结果" prop="right" v-if="temp.right==0">
+        <el-form-item label="结果" prop="right">
           <el-radio-group v-model="temp.right">
             <el-radio-button label="1">正确</el-radio-button>
             <el-radio-button label="2">错误</el-radio-button>
