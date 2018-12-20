@@ -40,6 +40,38 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="显示">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.show"
+            placeholder="显示与否"
+          >
+            <el-option
+              v-for="item in showOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据源">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.source"
+            placeholder="数据源"
+          >
+            <el-option
+              v-for="item in sourceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <!-- <el-form-item label="类型">
           <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
             <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -85,8 +117,8 @@
                 height="40"
               >
             </el-form-item>
-            <el-form-item label="推荐答案">
-              <span>{{ scope.row.authanswer }}</span>
+            <el-form-item label="当前">
+              <span>共{{scope.row.many}}场,正在进行第{{scope.row.whitch}}场</span>
             </el-form-item>
           </el-form>
         </template>
@@ -112,11 +144,11 @@
           >
         </template>
       </el-table-column>-->
-      <el-table-column align="center" label="场次" prop="whitch">
+      <!-- <el-table-column align="center" label="场次" prop="whitch">
         <template slot-scope="scope">
           <span>共{{scope.row.many}}场,正在进行第{{scope.row.whitch}}场</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column align="center" label="左侧队伍" prop="ltname"></el-table-column>
       <el-table-column align="center" label="左侧比分" prop="lscore"></el-table-column>
       <el-table-column align="center" label="右侧队伍" prop="rtname"></el-table-column>
@@ -127,6 +159,13 @@
           <span v-if="scope.row.status == 1">未开始</span>
           <span v-if="scope.row.status == 2">进行中</span>
           <span v-if="scope.row.status == 3">已结束</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="数据源" prop="source"></el-table-column>
+      <el-table-column align="center" label="显示" prop="is_show">
+        <template slot-scope="scope">
+          <span v-if="scope.row.is_show == 1">显示</span>
+          <span v-if="scope.row.is_show == 2">不显示</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="开始时间" prop="stime">
@@ -154,8 +193,14 @@
           <el-button
             type="primary"
             size="mini"
+            @click="handleShow(scope.row)"
+          >{{scope.row.is_show == 1?"不显示":'显示'}}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
             @click="handleUpdate(scope.row)"
           >{{$t('table.edit')}}</el-button>
+
           <el-button
             v-if="scope.row.status!='deleted'"
             size="mini"
@@ -341,6 +386,8 @@ export default {
       listQuery: {
         id: undefined,
         name: "",
+        source: "",
+        show: undefined,
         page: 1,
         limit: 20
       },
@@ -391,6 +438,26 @@ export default {
         {
           value: 2,
           label: "类型二"
+        }
+      ],
+      showOptions: [
+        {
+          value: 1,
+          label: "显示"
+        },
+        {
+          value: 2,
+          label: "不显示"
+        }
+      ],
+      sourceOptions: [
+        {
+          value: "vpgame",
+          label: "vpgame"
+        },
+        {
+          value: "esport007",
+          label: "esport007"
         }
       ],
       rules: {
@@ -533,6 +600,31 @@ export default {
                 duration: 2000
               });
             }
+          });
+        }
+      });
+    },
+    handleShow(row) {
+      row.is_show = row.is_show == 1 ? 2 : 1;
+      // const tempData = Object.assign({}, row); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+      // console.log("%o", tempData);
+      edit(row).then(res => {
+        if (res.code == 200) {
+          // this.getList();
+          for (const v of this.list) {
+            if (v.id === row.id) {
+              const index = this.list.indexOf(v);
+              this.list.splice(index, 1, row);
+              console.log("list>>", this.list);
+              break;
+            }
+          }
+          // this.dialogFormVisible = false;
+          this.$notify({
+            title: "成功",
+            message: "更新成功",
+            type: "success",
+            duration: 2000
           });
         }
       });
