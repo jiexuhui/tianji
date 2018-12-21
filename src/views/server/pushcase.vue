@@ -86,7 +86,8 @@
       </el-table-column>
       <el-table-column align="center" label="显示">
         <template slot-scope="scope">
-          <span>{{scope.row.show==0?'不显示':"显示"}}</span>
+          <el-tag type="success" v-if="scope.row.show==2">不显示</el-tag>
+          <el-tag type="success" v-if="scope.row.show==1">显示</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="排序" prop="order"></el-table-column>
