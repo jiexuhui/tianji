@@ -21,6 +21,22 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="游戏分类">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.matchid"
+            placeholder="游戏分类"
+          >
+            <el-option
+              v-for="item in matchidOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
           <!-- <router-link class="link-type" :to="'/server/createArticle'"> -->
@@ -186,6 +202,8 @@ export default {
       listLoading: true,
       listQuery: {
         title: "",
+        matchid: "",
+        tag: "",
         page: 1,
         limit: 10
       },
@@ -206,6 +224,28 @@ export default {
           label: "推单认证",
           value: 3
         }
+      ],
+      matchidOptions: [
+        {
+          label: "未分类",
+          value: 0
+        },
+        {
+          label: "DOTA2",
+          value: 1
+        },
+        {
+          label: "LOL",
+          value: 2
+        },
+        {
+          label: "CS:GO",
+          value: 3
+        },
+        {
+          label: "王者荣耀",
+          value: 4
+        }
       ]
     };
   },
@@ -224,8 +264,10 @@ export default {
   },
   methods: {
     detailpath(row) {
+      this.matchs.push({ id: 0, name: "未分类" });
       row = Object.assign(row, { matchs: this.matchs });
-      this.$router.push({ name: "编辑文章", params: row });
+      sessionStorage.setItem("articleDetail", JSON.stringify(row));
+      this.$router.push({ name: "编辑文章" });
     },
     addpath(row) {
       row = Object.assign(row, { matchs: this.matchs });

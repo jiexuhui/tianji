@@ -261,7 +261,7 @@ export default {
   created() {
     if (this.isEdit) {
       this.fetchData;
-      this.postForm = Object.assign({}, this.$route.params);
+      this.postForm = JSON.parse(sessionStorage.getItem("articleDetail"));
       this.matchs = this.postForm.matchs;
       // const id = this.$route.params && this.$route.params.id;
       this.fetchData(this.postForm.id);
