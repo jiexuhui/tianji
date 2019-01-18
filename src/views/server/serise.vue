@@ -105,9 +105,12 @@
             <el-form-item label="赛事ID">
               <span>{{ scope.row.id }}</span>
             </el-form-item>
-            <el-form-item label="参赛队伍">
-              <span>{{ scope.row.tname }}</span>
+            <el-form-item label="阶段">
+              <span>{{ scope.row.stage }}</span>
             </el-form-item>
+            <!-- <el-form-item label="参赛队伍">
+              <span>{{ scope.row.tname }}</span>
+            </el-form-item>-->
             <el-form-item label="LOGO">
               <img
                 class="link-type"
@@ -130,9 +133,16 @@
       </el-table-column>
       <!-- <el-table-column align="center" label="ID" prop="id"></el-table-column> -->
       <el-table-column align="center" label="名称" prop="name"></el-table-column>
-      <el-table-column align="center" label="描述" prop="desc"></el-table-column>
+      <!-- <el-table-column align="center" label="描述" prop="stage"></el-table-column> -->
       <!-- <el-table-column align="center" label="参赛队伍" prop="tname"></el-table-column> -->
-      <el-table-column align="center" label="所属游戏" prop="game"></el-table-column>
+      <el-table-column align="center" label="所属游戏" prop="game">
+        <template slot-scope="scope">
+          <span v-if="scope.row.gameid==1">DOTA2</span>
+          <span v-if="scope.row.gameid==2">LOL</span>
+          <span v-if="scope.row.gameid==3">CS:GO</span>
+          <span v-if="scope.row.gameid==4">英雄联盟</span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column align="center" min-width="150" label="logo" prop="image">
         <template slot-scope="scope">
           <img
@@ -236,8 +246,8 @@
         <el-form-item label="赛事名称" prop="name">
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="temp.desc"></el-input>
+        <el-form-item label="阶段" prop="stage">
+          <el-input v-model="temp.stage"></el-input>
         </el-form-item>
         <el-form-item label="所属游戏" prop="gameid">
           <el-select class="filter-item" v-model="temp.gameid" placeholder="游戏">
@@ -265,28 +275,20 @@
         <el-form-item label="正在进行" prop="many">
           <el-input type="number" v-model="temp.whitch"></el-input>
         </el-form-item>
-        <el-form-item label="左侧队伍" prop="lteam">
-          <el-select class="filter-item" v-model="temp.lteam" placeholder="左侧队伍">
-            <el-option
-              v-for="item in teamOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+        <el-form-item label="左侧队伍名称" prop="ltname">
+          <el-input v-model="temp.ltname"></el-input>
+        </el-form-item>
+        <el-form-item label="左侧队伍ID" prop="lteam">
+          <el-input type="number" v-model="temp.lteam"></el-input>
         </el-form-item>
         <el-form-item label="左侧比分" prop="lscore">
           <el-input type="number" v-model="temp.lscore"></el-input>
         </el-form-item>
-        <el-form-item label="右侧队伍" prop="rteam">
-          <el-select class="filter-item" v-model="temp.rteam" placeholder="右侧队伍">
-            <el-option
-              v-for="item in teamOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+        <el-form-item label="右侧队伍名称" prop="rtname">
+          <el-input v-model="temp.rtname"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧队伍ID" prop="rteam">
+          <el-input type="number" v-model="temp.rteam"></el-input>
         </el-form-item>
         <el-form-item label="右侧比分" prop="rscore">
           <el-input type="number" v-model="temp.rscore"></el-input>
@@ -298,6 +300,17 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="关联推单类型" prop="silktypes">
+          <el-select class="filter-item" v-model="temp.silktypes" placeholder="关联推单买点" multiple>
+            <el-option
+              v-for="item in silkOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -387,13 +400,13 @@ export default {
         id: undefined,
         name: "",
         source: "",
-        show: undefined,
+        show: 1,
         page: 1,
         limit: 20
       },
       temp: {
         name: "",
-        desc: "",
+        stage: "",
         gameid: undefined,
         teams: undefined,
         stime: "",
@@ -403,7 +416,8 @@ export default {
         leftteam: undefined,
         leftscore: undefined,
         rightteam: undefined,
-        rightscore: undefined
+        rightscore: undefined,
+        silitypes: []
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -466,7 +480,8 @@ export default {
       uploaddialogFormVisible: false,
       fileList: [],
       file: {},
-      teamOptions: []
+      teamOptions: [],
+      silkOptions: []
     };
   },
   filters: {
@@ -504,9 +519,15 @@ export default {
       this.listLoading = true;
       list(this.listQuery).then(response => {
         this.list = response.data[0];
+        for (const item of this.list) {
+          if (item.silitypes != null) {
+            item.silitypes = item.silitypes.split(",");
+          }
+        }
         this.gameOptions = response.data[1];
         this.total = response.data[2][0].count;
         this.teamOptions = response.data[3];
+        this.silkOptions = response.data[4];
         this.listLoading = false;
       });
     },
@@ -550,6 +571,7 @@ export default {
         if (valid) {
           console.log(this.temp.teams);
           this.temp.teams = this.temp.teams.toString();
+          this.temp.silktypes = this.temp.silktypes.toString();
           console.log(this.temp.teams);
           add(this.temp).then(res => {
             if (res.code === 200) {
@@ -582,6 +604,7 @@ export default {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           console.log("%o", tempData);
           tempData.teams = tempData.teams.toString();
+          tempData.silktypes = this.temp.silktypes.toString();
           edit(tempData).then(res => {
             if (res.code == 200) {
               this.getList();
