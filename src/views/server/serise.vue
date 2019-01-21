@@ -591,6 +591,10 @@ export default {
       console.log("this.temp.teams11", row);
       this.temp.teams =
         this.temp.teams != null ? this.temp.teams.split(",").map(Number) : "";
+      this.temp.silktypes =
+        this.temp.silktypes != null
+          ? this.temp.silktypes.split(",").map(Number)
+          : "";
       console.log("this.temp.teams", this.temp.teams);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
