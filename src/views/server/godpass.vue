@@ -58,6 +58,7 @@
           <span>{{scope.row.gtime}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="后台账号" width="150px" prop="account"></el-table-column>
       <el-table-column
         align="center"
         :label="$t('table.actions')"
@@ -66,11 +67,16 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.status!='1'"
+            v-if="scope.row.status!='0'"
             size="mini"
             type="danger"
             @click="handlePass(scope.row)"
           >{{scope.row.god == 1?'通过':'撤销'}}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+          >{{$t('table.edit')}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -87,11 +93,79 @@
         :total="total"
       ></el-pagination>
     </div>
+
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form
+        :rules="rules"
+        ref="dataForm"
+        :model="etemp"
+        label-position="left"
+        label-width="100px"
+        style="width: 500px; margin-left:50px;"
+      >
+        <el-form-item label="大神名称" prop="godname">
+           <el-input v-model="etemp.godname"></el-input>
+        </el-form-item>
+        <el-form-item label="大神等级" prop="godtype">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="etemp.godtype"
+            placeholder="审核状态"
+          >
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="领域" prop="field">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="etemp.field"
+            placeholder="领域"
+          >
+            <el-option
+              v-for="item in gameOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+           <el-input v-model="etemp.phone" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="大神说明" prop="desc">
+           <el-input v-model="etemp.desc" ></el-input>
+        </el-form-item>
+        <el-form-item label="大神简介" prop="introduction">
+           <el-input v-model="etemp.introduction" ></el-input>
+        </el-form-item>
+        <el-form-item label="后台账号" prop="account">
+           <el-input v-model="etemp.account" ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button
+          v-if="dialogStatus=='create'"
+          type="primary"
+          @click="createData"
+        >{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { list, pass } from "@/api/godpass";
+import { list, pass, edit } from "@/api/godpass";
 import waves from "@/directive/waves"; // 水波纹指令
 
 export default {
@@ -117,6 +191,15 @@ export default {
         url: "",
         status: 0
       },
+      etemp: {
+        godname: "",
+        godtype: 1,
+        field: "",
+        phone: "",
+        desc: "",
+        introduction: "",
+        account: ""
+      },
       dialogFormVisible: false,
       dialogStatus: "",
       textMap: {
@@ -137,6 +220,34 @@ export default {
         {
           value: 2,
           label: "审核通过"
+        }
+      ],
+      typeOptions: [
+        {
+          value: 1,
+          label: "A"
+        },
+        {
+          value: 2,
+          label: "B"
+        }
+      ],
+      gameOptions: [
+        {
+          value: 1,
+          label: "DOTA2"
+        },
+        {
+          value: 2,
+          label: "LOL"
+        },
+         {
+          value: 3,
+          label: "CS:GO"
+        },
+        {
+          value: 4,
+          label: "王者荣耀"
         }
       ]
     };
@@ -225,6 +336,35 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    handleUpdate(row) {
+      this.etemp = Object.assign({}, row); // copy obj
+      console.log("etemp>>",this.etemp)
+      this.dialogStatus = "update";
+      this.dialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs["dataForm"].clearValidate();
+      });
+    },
+    updateData() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          const tempData = Object.assign({}, this.etemp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          console.log("tempData>>%o", tempData);
+          edit(tempData).then(res => {
+            if (res.code == 200) {
+              this.getList()
+              this.dialogFormVisible = false;
+              this.$notify({
+                title: "成功",
+                message: "更新成功",
+                type: "success",
+                duration: 2000
+              });
+            }
+          });
+        }
+      });
     },
     handleDownload() {
       this.downloadLoading = true;

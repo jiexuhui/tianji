@@ -153,16 +153,16 @@
       <el-table-column align="center" label="用户昵称" width="150px" prop="nickName"></el-table-column>
       <el-table-column align="center" min-width="150" label="来源">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.source === 1">查看免费单</el-tag>
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result === 2">分享</el-tag>
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result === 3">付费单</el-tag>
+          <el-tag :type="scope.row.source | statusFilter" v-if="scope.row.source == 1">查看免费单</el-tag>
+          <el-tag :type="scope.row.source | statusFilter" v-if="scope.row.source == 2">分享</el-tag>
+          <el-tag :type="scope.row.source | statusFilter" v-if="scope.row.source == 3">付费单</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="状态">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result === 0">未开奖</el-tag>
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result === 1">中奖</el-tag>
-          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result === 2">未中奖</el-tag>
+          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result == 0">未开奖</el-tag>
+          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result == 1">中奖</el-tag>
+          <el-tag :type="scope.row.result | statusFilter" v-if="scope.row.result == 2">未中奖</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="时间">
