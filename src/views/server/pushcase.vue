@@ -51,13 +51,16 @@
             <el-form-item label="比赛">
               <span>{{ scope.row.matchname }}</span>
             </el-form-item>
-            <el-form-item label="推荐买点">
+            <el-form-item label="标题">
               <span>{{ scope.row.title }}</span>
             </el-form-item>
-            <el-form-item label="推荐理由">
+            <el-form-item label="基本面分析">
               <span>{{ scope.row.content }}</span>
             </el-form-item>
-            <el-form-item label="推荐答案">
+            <el-form-item label="大神观点">
+              <span>{{ scope.row.viewpoints }}</span>
+            </el-form-item>
+            <el-form-item label="推荐买点">
               <span>{{ scope.row.authanswer }}</span>
             </el-form-item>
           </el-form>
@@ -88,6 +91,7 @@
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.show==2">不显示</el-tag>
           <el-tag type="success" v-if="scope.row.show==1">显示</el-tag>
+          <el-tag type="success" v-if="scope.row.show==3">已打回</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="排序" prop="order"></el-table-column>
@@ -143,6 +147,7 @@
           <el-radio-group v-model="temp.show">
             <el-radio-button label="1">显示</el-radio-button>
             <el-radio-button label="2">不显示</el-radio-button>
+            <el-radio-button label="3">打回</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="排序" prop="order">
@@ -154,7 +159,6 @@
             <el-radio-button label="0">等待结果</el-radio-button>
             <el-radio-button label="1">正确</el-radio-button>
             <el-radio-button label="2">错误</el-radio-button>
-            <el-radio-button label="3">打回</el-radio-button>
           </el-radio-group>
         </el-form-item>
       </el-form>

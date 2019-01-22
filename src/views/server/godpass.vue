@@ -50,7 +50,11 @@
       </el-table-column>
       <el-table-column align="center" min-width="150" label="申请状态">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.god === 1? "申请中": "已通过"}}</el-tag>
+          <el-tag :type="scope.row.status | statusFilter">
+            <span v-if="scope.row.god === 0">已撤销</span>
+            <span v-if="scope.row.god === 1">申请中</span>
+            <span v-if="scope.row.god === 2">已通过</span>
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="申请时间">
@@ -67,11 +71,12 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.status!='0'"
             size="mini"
             type="danger"
             @click="handlePass(scope.row)"
-          >{{scope.row.god == 1?'通过':'撤销'}}</el-button>
+          > <span v-if="scope.row.god === 0">通过</span>
+            <span v-if="scope.row.god === 1">通过</span>
+            <span v-if="scope.row.god === 2">撤销</span></el-button>
           <el-button
             type="primary"
             size="mini"
@@ -303,7 +308,12 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       let params = {};
       params.uid = this.temp.id;
-      params.pass = this.temp.god == 1 ? 2 : 0;
+      if(this.temp.god==1 || this.temp.god==0) {
+        params.pass = 2;
+      }else {
+        params.pass = 0;
+      }
+     
       const index = this.list.indexOf(row);
       this.$confirm("确定吗?", "提示", {
         confirmButtonText: "确定",
@@ -315,7 +325,7 @@ export default {
             if (res.code == 200) {
               for (const v of this.list) {
                 if (v.id === this.temp.id) {
-                  this.temp.god = this.temp.god == 1 ? 2 : 1;
+                  this.temp.god = this.temp.god == 2 ? 0 : 2;
                   const index = this.list.indexOf(v);
                   this.list.splice(index, 1, this.temp);
                   break;
