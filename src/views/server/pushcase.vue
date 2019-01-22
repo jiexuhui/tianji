@@ -54,7 +54,10 @@
             <el-form-item label="推荐买点">
               <span>{{ scope.row.title }}</span>
             </el-form-item>
-            <el-form-item label="推荐理由">
+            <el-form-item label="基本面分析">
+              <span>{{ scope.row.content }}</span>
+            </el-form-item>
+            <el-form-item label="大神观点">
               <span>{{ scope.row.content }}</span>
             </el-form-item>
             <el-form-item label="推荐答案">

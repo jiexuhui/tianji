@@ -66,7 +66,6 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.status!='1'"
             size="mini"
             type="danger"
             @click="handlePass(scope.row)"
