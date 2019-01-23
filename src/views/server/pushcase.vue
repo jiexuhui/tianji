@@ -51,16 +51,16 @@
             <el-form-item label="比赛">
               <span>{{ scope.row.matchname }}</span>
             </el-form-item>
-            <el-form-item label="推荐买点">
+            <el-form-item label="标题">
               <span>{{ scope.row.title }}</span>
             </el-form-item>
             <el-form-item label="基本面分析">
               <span>{{ scope.row.content }}</span>
             </el-form-item>
             <el-form-item label="大神观点">
-              <span>{{ scope.row.content }}</span>
+              <span>{{ scope.row.viewpoints }}</span>
             </el-form-item>
-            <el-form-item label="推荐答案">
+            <el-form-item label="推荐买点">
               <span>{{ scope.row.authanswer }}</span>
             </el-form-item>
           </el-form>
@@ -71,26 +71,27 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="单子ID" prop="id"></el-table-column>
+      <el-table-column align="center" label="单子ID" prop="silkid"></el-table-column>
       <el-table-column align="center" label="用户昵称" prop="nickName"></el-table-column>
       <el-table-column align="center" label="比赛ID" prop="matchid"></el-table-column>
       <!-- <el-table-column align="center" label="比赛" prop="matchname"></el-table-column> -->
       <el-table-column align="center" label="队伍1" prop="team1"></el-table-column>
       <el-table-column align="center" label="队伍2" prop="team2"></el-table-column>
       <el-table-column align="center" label="价格" prop="price"></el-table-column>
-      <el-table-column align="center" label="推荐答案" prop="authanswer"></el-table-column>
+      <!-- <el-table-column align="center" label="推荐答案" prop="authanswer"></el-table-column> -->
       <!-- <el-table-column align="center" label="推荐理由" prop="content"></el-table-column> -->
-      <el-table-column align="center" label="结果" prop="right">
+      <!-- <el-table-column align="center" label="结果" prop="right">
         <template slot-scope="scope">
           <span v-for="item in rightOptions">
             <el-tag v-if="item.value == scope.row.right">{{item.label}}</el-tag>
           </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="显示">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.show==2">不显示</el-tag>
           <el-tag type="success" v-if="scope.row.show==1">显示</el-tag>
+          <el-tag type="success" v-if="scope.row.show==3">已打回</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" label="排序" prop="order"></el-table-column>
@@ -140,22 +141,25 @@
         :model="temp"
         label-position="left"
         label-width="100px"
-        style="width: 400px; margin-left:50px;"
+        style="width: 500px; margin-left:50px;"
       >
-        <el-form-item label="结果" prop="right">
-          <el-radio-group v-model="temp.right">
-            <el-radio-button label="1">正确</el-radio-button>
-            <el-radio-button label="2">错误</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
         <el-form-item label="显示" prop="show">
           <el-radio-group v-model="temp.show">
             <el-radio-button label="1">显示</el-radio-button>
             <el-radio-button label="2">不显示</el-radio-button>
+            <el-radio-button label="3">打回</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="排序" prop="order">
           <el-input type="number" v-model="temp.order"></el-input>数值越大越靠前
+        </el-form-item>
+        <h3>推单结果</h3>
+        <el-form-item :label="item.label" prop="order" v-for="item in answers" :key="index">
+          <el-radio-group v-model="item.right">
+            <el-radio-button label="0">等待结果</el-radio-button>
+            <el-radio-button label="1">正确</el-radio-button>
+            <el-radio-button label="2">错误</el-radio-button>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -237,8 +241,16 @@ export default {
           value: 1,
           label: "正确"
         },
-        { value: 2, label: "错误" }
-      ]
+        { 
+          value: 2,
+          label: "错误"
+        },
+        { 
+          value: 3,
+          label: "打回"
+        },
+      ],
+      answers: []
     };
   },
   filters: {
@@ -326,6 +338,19 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
+      this.answers = []
+      console.log("rights11>>", this.temp)
+      this.temp.authanswer = this.temp.authanswer == "" ?[]:this.temp.authanswer.split(',')
+      this.temp.rights = this.temp.rights == "" ?[]:this.temp.rights.split(',').map(Number)
+      console.log("rights22>>", this.temp.rights)
+      for (const index in this.temp.authanswer){
+        const answer = {}
+        answer.silkid = this.temp.silkid
+        answer.label = this.temp.authanswer[index]
+        answer.right =  this.temp.rights[index]
+        this.answers.push(answer)
+      }
+      console.log("authanswer>>",this.answers)
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -336,17 +361,20 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          console.log("%o", tempData);
+          console.log("tempData>>%o", tempData);
+          console.log("answeis>>%o", this.answers);
+          tempData.answers = this.answers
           settlement(tempData).then(res => {
             if (res.code == 200) {
-              for (const v of this.list) {
-                if (v.id === this.temp.id) {
-                  this.temp.rtime = res.rtime;
-                  const index = this.list.indexOf(v);
-                  this.list.splice(index, 1, this.temp);
-                  break;
-                }
-              }
+              // for (const v of this.list) {
+              //   if (v.id === this.temp.id) {
+              //     this.temp.rtime = res.rtime;
+              //     const index = this.list.indexOf(v);
+              //     this.list.splice(index, 1, this.temp);
+              //     break;
+              //   }
+              // }
+              this.getList()
               this.dialogFormVisible = false;
               this.$notify({
                 title: "成功",

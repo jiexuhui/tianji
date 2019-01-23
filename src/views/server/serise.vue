@@ -72,12 +72,17 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="类型">
-          <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
-            <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>-->
+        <el-form-item label="开始时间">
+          <el-date-picker
+            v-model="listQuery.stime"
+            type="daterange"
+            unlink-panels
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
           <el-button
@@ -402,7 +407,8 @@ export default {
         source: "",
         show: 1,
         page: 1,
-        limit: 20
+        limit: 20,
+        stime: []
       },
       temp: {
         name: "",
@@ -517,6 +523,7 @@ export default {
     },
     getList() {
       this.listLoading = true;
+      this.listQuery.stime = Array.isArray(this.listQuery.stime)?this.listQuery.stime:[]
       list(this.listQuery).then(response => {
         this.list = response.data[0];
         for (const item of this.list) {
@@ -588,14 +595,13 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
-      console.log("this.temp.teams11", row);
+      console.log("this.temp.teams11", this.temp.teams);
       this.temp.teams =
-        this.temp.teams != null ? this.temp.teams.split(",").map(Number) : "";
+        this.temp.teams != null ? this.temp.teams.split(",").map(Number) : [];
+         console.log("this.temp.teams22", this.temp.silktypes);
       this.temp.silktypes =
-        this.temp.silktypes != null
-          ? this.temp.silktypes.split(",").map(Number)
-          : "";
-      console.log("this.temp.teams", this.temp.teams);
+        this.temp.silktypes != null ? this.temp.silktypes.split(",").map(Number): [];  
+      console.log("this.temp.silktypes", this.temp.silktypes);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {

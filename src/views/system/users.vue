@@ -304,6 +304,7 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       this.temp.password = "undefined";
       this.dialogStatus = "update";
+       this.temp.roleid = parseInt(this.temp.roleid)
       this.dialogFormVisible = true;
       this.$nextTick(() => {
         this.$refs["dataForm"].clearValidate();
