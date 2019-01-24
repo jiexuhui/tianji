@@ -86,7 +86,7 @@
             <el-tag v-if="item.value == scope.row.right">{{item.label}}</el-tag>
           </span>
         </template>
-      </el-table-column> -->
+      </el-table-column>-->
       <el-table-column align="center" label="显示">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.show==2">不显示</el-tag>
@@ -135,14 +135,7 @@
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        :rules="rules"
-        ref="dataForm"
-        :model="temp"
-        label-position="left"
-        label-width="100px"
-        style="width: 500px; margin-left:50px;"
-      >
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left">
         <el-form-item label="显示" prop="show">
           <el-radio-group v-model="temp.show">
             <el-radio-button label="1">显示</el-radio-button>
@@ -241,14 +234,14 @@ export default {
           value: 1,
           label: "正确"
         },
-        { 
+        {
           value: 2,
           label: "错误"
         },
-        { 
+        {
           value: 3,
           label: "打回"
-        },
+        }
       ],
       answers: []
     };
@@ -338,19 +331,21 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
-      this.answers = []
-      console.log("rights11>>", this.temp)
-      this.temp.authanswer = this.temp.authanswer == "" ?[]:this.temp.authanswer.split(',')
-      this.temp.rights = this.temp.rights == "" ?[]:this.temp.rights.split(',').map(Number)
-      console.log("rights22>>", this.temp.rights)
-      for (const index in this.temp.authanswer){
-        const answer = {}
-        answer.silkid = this.temp.silkid
-        answer.label = this.temp.authanswer[index]
-        answer.right =  this.temp.rights[index]
-        this.answers.push(answer)
+      this.answers = [];
+      console.log("rights11>>", this.temp);
+      this.temp.authanswer =
+        this.temp.authanswer == "" ? [] : this.temp.authanswer.split(",");
+      this.temp.rights =
+        this.temp.rights == "" ? [] : this.temp.rights.split(",").map(Number);
+      console.log("rights22>>", this.temp.rights);
+      for (const index in this.temp.authanswer) {
+        const answer = {};
+        answer.silkid = this.temp.silkid;
+        answer.label = this.temp.authanswer[index];
+        answer.right = this.temp.rights[index];
+        this.answers.push(answer);
       }
-      console.log("authanswer>>",this.answers)
+      console.log("authanswer>>", this.answers);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -363,7 +358,7 @@ export default {
           const tempData = Object.assign({}, this.temp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           console.log("tempData>>%o", tempData);
           console.log("answeis>>%o", this.answers);
-          tempData.answers = this.answers
+          tempData.answers = this.answers;
           settlement(tempData).then(res => {
             if (res.code == 200) {
               // for (const v of this.list) {
@@ -374,7 +369,7 @@ export default {
               //     break;
               //   }
               // }
-              this.getList()
+              this.getList();
               this.dialogFormVisible = false;
               this.$notify({
                 title: "成功",

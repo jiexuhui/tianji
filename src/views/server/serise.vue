@@ -240,14 +240,7 @@
     </div>
 
     <el-dialog :title="textMap[dialogStatus]" v-el-drag-dialog :visible.sync="dialogFormVisible">
-      <el-form
-        :rules="rules"
-        ref="dataForm"
-        :model="temp"
-        label-position="left"
-        label-width="100px"
-        style="width: 400px; margin-left:50px;"
-      >
+      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left">
         <el-form-item label="赛事名称" prop="name">
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
@@ -523,7 +516,9 @@ export default {
     },
     getList() {
       this.listLoading = true;
-      this.listQuery.stime = Array.isArray(this.listQuery.stime)?this.listQuery.stime:[]
+      this.listQuery.stime = Array.isArray(this.listQuery.stime)
+        ? this.listQuery.stime
+        : [];
       list(this.listQuery).then(response => {
         this.list = response.data[0];
         for (const item of this.list) {
@@ -598,9 +593,11 @@ export default {
       console.log("this.temp.teams11", this.temp.teams);
       this.temp.teams =
         this.temp.teams != null ? this.temp.teams.split(",").map(Number) : [];
-         console.log("this.temp.teams22", this.temp.silktypes);
+      console.log("this.temp.teams22", this.temp.silktypes);
       this.temp.silktypes =
-        this.temp.silktypes != null ? this.temp.silktypes.split(",").map(Number): [];  
+        this.temp.silktypes != null
+          ? this.temp.silktypes.split(",").map(Number)
+          : [];
       console.log("this.temp.silktypes", this.temp.silktypes);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
