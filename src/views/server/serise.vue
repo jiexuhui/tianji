@@ -276,6 +276,9 @@
         <el-form-item label="左侧队伍名称" prop="ltname">
           <el-input v-model="temp.ltname"></el-input>
         </el-form-item>
+        <el-form-item label="左侧队伍图标" prop="llogo">
+          <el-input v-model="temp.llogo"></el-input>
+        </el-form-item>
         <el-form-item label="左侧队伍ID" prop="lteam">
           <el-input type="number" v-model="temp.lteam"></el-input>
         </el-form-item>
@@ -284,6 +287,9 @@
         </el-form-item>
         <el-form-item label="右侧队伍名称" prop="rtname">
           <el-input v-model="temp.rtname"></el-input>
+        </el-form-item>
+        <el-form-item label="右侧队伍图标" prop="rlogo">
+          <el-input v-model="temp.rlogo"></el-input>
         </el-form-item>
         <el-form-item label="右侧队伍ID" prop="rteam">
           <el-input type="number" v-model="temp.rteam"></el-input>
@@ -329,6 +335,15 @@
             default-time="18:00:00"
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="关联赛事ID" prop="schedule_id">
+          <el-input type="number" v-model="temp.schedule_id"></el-input>
+        </el-form-item>
+        <el-form-item label="是否自动更新" prop="isEdit">
+          <el-radio-group v-model="temp.isEdit">
+            <el-radio-button label="0">自动更新</el-radio-button>
+            <el-radio-button label="1">手动更新</el-radio-button>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -416,7 +431,11 @@ export default {
         leftscore: undefined,
         rightteam: undefined,
         rightscore: undefined,
-        silitypes: []
+        silitypes: [],
+        ieEdit: 0,
+        schedule_id: undefined,
+        llogo: undefined,
+        rlogo: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
