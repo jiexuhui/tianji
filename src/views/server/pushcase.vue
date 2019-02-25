@@ -148,6 +148,7 @@
         </el-form-item>
         <h3>推单结果</h3>
         <el-form-item :label="item.label" prop="order" v-for="item in answers" :key="index">
+          <el-input v-model="item.label"></el-input>
           <el-radio-group v-model="item.right">
             <el-radio-button label="0">等待结果</el-radio-button>
             <el-radio-button label="1">正确</el-radio-button>
