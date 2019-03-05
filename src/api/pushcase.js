@@ -17,7 +17,7 @@ export function edit(params) {
 }
 
 export function del(params) {
-  return request.post("/admin/banner/delete", params);
+  return request.post("/admin/pushcase/delete", params);
 }
 
 export function upload(params) {
@@ -27,4 +27,3 @@ export function upload(params) {
 export function matchList(params) {
   return request.post("/admin/createCase/matchList", params);
 }
-

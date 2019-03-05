@@ -148,7 +148,11 @@
         </el-form-item>
         <h3>推单结果</h3>
         <el-form-item :label="item.label" prop="order" v-for="item in answers" :key="index">
-          <el-input v-model="item.label"></el-input>
+          <el-input v-model="item.label" placeholder="队伍名和买点用:分隔" class="input-with-select">
+            <el-button slot="append" icon="el-icon-remove" @click.prevent="removeProp(item)"/>
+          </el-input>
+          <!-- <el-input v-model="item.label"></el-input> -->
+          <!-- <el-button @click.prevent="removeDomain(domain)">删除</el-button> -->
           <el-radio-group v-model="item.right">
             <el-radio-button label="0">等待结果</el-radio-button>
             <el-radio-button label="1">正确</el-radio-button>
@@ -183,7 +187,7 @@
 }
 </style>
 <script>
-import { list, edit, settlement } from "@/api/pushcase";
+import { list, edit, settlement, del } from "@/api/pushcase";
 import { parseTime } from "@/utils/index";
 import waves from "@/directive/waves"; // 水波纹指令
 
@@ -297,12 +301,36 @@ export default {
         }
       });
     },
-    resetTemp() {
-      this.temp = {
-        show: 1,
-        order: 0,
-        right: 0
-      };
+
+    removeProp(item) {
+      this.$confirm("确定删除吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          del(this.temp).then(res => {
+            console.log("res>>", res);
+            if (res.code == 200) {
+              var index = this.answers.indexOf(item);
+              if (index !== -1) {
+                this.answers.splice(index, 1);
+              }
+              this.$notify({
+                title: "成功",
+                message: "删除成功",
+                type: "success",
+                duration: 2000
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     handleCreate() {
       this.resetTemp();
@@ -334,6 +362,8 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       this.answers = [];
       console.log("rights11>>", this.temp);
+      this.temp.ids =
+        this.temp.ids == "" ? [] : this.temp.ids.split(",").map(Number);
       this.temp.authanswer =
         this.temp.authanswer == "" ? [] : this.temp.authanswer.split(",");
       this.temp.rights =
@@ -341,6 +371,7 @@ export default {
       console.log("rights22>>", this.temp.rights);
       for (const index in this.temp.authanswer) {
         const answer = {};
+        answer.id = this.temp.ids[index];
         answer.silkid = this.temp.silkid;
         answer.label = this.temp.authanswer[index];
         answer.right = this.temp.rights[index];
