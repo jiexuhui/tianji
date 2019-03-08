@@ -215,7 +215,7 @@
             size="mini"
             @click="handleUpdate(scope.row)"
           >{{$t('table.edit')}}</el-button>
-
+          <el-button size="mini" type="info" @click="handleSet(scope.row)">结算</el-button>
           <el-button
             v-if="scope.row.status!='deleted'"
             size="mini"
@@ -388,11 +388,34 @@
         <!-- <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button> -->
       </div>
     </el-dialog>
+
+    <el-dialog title="预测结算" :visible.sync="handleSetFormVisible">
+      <el-form :rules="rules" ref="setdataForm" :model="settemp" label-position="left">
+        <el-form-item :label="item.label" prop="order" v-for="item in silks" :key="item.label">
+          <!-- <el-input v-model="item.label"></el-input> -->
+          <!-- <el-button @click.prevent="removeDomain(domain)">删除</el-button> -->
+          <el-radio-group v-model="item.right">
+            <el-radio-button label="0">等待结果</el-radio-button>
+            <el-radio-button label="1">正确</el-radio-button>
+            <el-radio-button label="2">错误</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleSetFormVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button
+          v-if="dialogStatus=='create'"
+          type="primary"
+          @click="createData"
+        >{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" @click="settment">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { list, add, edit, del, upload } from "@/api/serise";
+import { list, add, edit, del, upload, settment } from "@/api/serise";
 import waves from "@/directive/waves"; // 水波纹指令
 import elDragDialog from "@/directive/el-dragDialog";
 import { parseTime } from "@/utils/index";
@@ -405,6 +428,7 @@ export default {
   },
   data() {
     return {
+      setkey: 99,
       tableKey: 0,
       list: null,
       total: null,
@@ -496,10 +520,13 @@ export default {
         name: [{ required: true, message: "请输入比赛名称", trigger: "blur" }]
       },
       uploaddialogFormVisible: false,
+      handleSetFormVisible: false,
       fileList: [],
       file: {},
       teamOptions: [],
-      silkOptions: []
+      silkOptions: [],
+      settemp: {},
+      silks: []
     };
   },
   filters: {
@@ -527,6 +554,7 @@ export default {
     }
   },
   created() {
+    this.listQuery.id = this.$route.params.matchid;
     this.getList();
   },
   methods: {
@@ -575,6 +603,66 @@ export default {
         if (res.code === 200) {
           this.$refs.tree.setCheckedKeys(res.data);
           this.pubdialogFormVisible = true;
+        }
+      });
+    },
+    handleSet(row) {
+      this.$refs.setdataForm && this.$refs.setdataForm.resetFields();
+      this.handleSetFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs["setdataForm"].clearValidate();
+      });
+      this.silks = [];
+      var silksnamearr = [];
+      var silksteamarr = [];
+      var silksresarr = [];
+      if (row.silktypename != null) silksnamearr = row.silktypename.split(",");
+      if (row.silkteam != null) silksteamarr = row.silkteam.split(",");
+      if (row.silkresult != null) silksresarr = row.silkresult.split(",");
+      this.silks.push(
+        {
+          label: row.ltname + ":胜",
+          right: silksresarr.length > 0 ? silksresarr[0] : 0,
+          id: row.id
+        },
+        {
+          label: row.rtname + ":胜",
+          right: silksresarr.length > 0 ? silksresarr[1] : 0,
+          id: row.id
+        }
+      );
+      if (silksnamearr.length > 0) {
+        for (const ix in silksnamearr) {
+          const arr = {
+            label:
+              (silksteamarr[ix] == 1 ? row.ltname : row.rtname) +
+              ":" +
+              silksnamearr[ix],
+            right: silksresarr.length > 0 ? silksresarr[ix] : 0,
+            id: row.id
+          };
+          console.log("silksresarr>>>" + ix, silksresarr[ix]);
+          this.silks.push(arr);
+        }
+      }
+      console.log("right>>>", this.silks);
+    },
+    settment() {
+      console.log("settment>>>", this.silks);
+      var rights = [];
+      for (const ix of this.silks) {
+        rights.push(ix.right);
+      }
+      var rightstr = rights.toString();
+      const params = { rightstr: rightstr, silks: this.silks };
+      settment(params).then(res => {
+        if (res.code === 200) {
+          // this.temp.id = res.id;
+          // this.temp.ctime = res.ctime;
+          // this.list.unshift(this.temp);
+          this.getList();
+          this.$message.success("操作成功");
+          this.handleSetFormVisible = false;
         }
       });
     },
