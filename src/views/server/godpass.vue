@@ -57,6 +57,9 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column align="center" min-width="150" label="虚拟点赞上限" prop="viragree"></el-table-column>
+      <el-table-column align="center" min-width="150" label="虚拟转发上限" prop="virshare"></el-table-column>
+      <el-table-column align="center" min-width="150" label="平台倍率" prop="platformrate"></el-table-column>
       <el-table-column align="center" min-width="150" label="申请时间">
         <template slot-scope="scope">
           <span>{{scope.row.gtime}}</span>
@@ -70,13 +73,11 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handlePass(scope.row)"
-          > <span v-if="scope.row.god === 0">通过</span>
+          <el-button size="mini" type="danger" @click="handlePass(scope.row)">
+            <span v-if="scope.row.god === 0">通过</span>
             <span v-if="scope.row.god === 1">通过</span>
-            <span v-if="scope.row.god === 2">撤销</span></el-button>
+            <span v-if="scope.row.god === 2">撤销</span>
+          </el-button>
           <el-button
             type="primary"
             size="mini"
@@ -109,7 +110,7 @@
         style="width: 500px; margin-left:50px;"
       >
         <el-form-item label="大神名称" prop="godname">
-           <el-input v-model="etemp.godname"></el-input>
+          <el-input v-model="etemp.godname"></el-input>
         </el-form-item>
         <el-form-item label="大神等级" prop="godtype">
           <el-select
@@ -130,7 +131,7 @@
         <el-form-item label="领域" prop="field">
           <el-select
             clearable
-            style="width: 90px"
+            style="width: 120px"
             class="filter-item"
             v-model="etemp.field"
             placeholder="领域"
@@ -144,16 +145,29 @@
           </el-select>
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-           <el-input v-model="etemp.phone" type="number"></el-input>
+          <el-input v-model="etemp.phone" type="number"></el-input>
         </el-form-item>
         <el-form-item label="大神说明" prop="desc">
-           <el-input v-model="etemp.desc" ></el-input>
+          <el-input v-model="etemp.desc"></el-input>
         </el-form-item>
         <el-form-item label="大神简介" prop="introduction">
-           <el-input v-model="etemp.introduction" ></el-input>
+          <el-input v-model="etemp.introduction"></el-input>
         </el-form-item>
         <el-form-item label="后台账号" prop="account">
-           <el-input v-model="etemp.account" ></el-input>
+          <el-input v-model="etemp.account"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="etemp.phone" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="虚拟点赞上限" prop="viragree">
+          <el-input v-model="etemp.viragree"></el-input>
+        </el-form-item>
+        <el-form-item label="虚拟转发上限" prop="virshare">
+          <el-input v-model="etemp.virshare"></el-input>
+        </el-form-item>
+        <el-form-item label="平台繁荣倍率" prop="platformrate">
+          <el-input v-model="etemp.platformrate"></el-input>
+          <label>前端显示数：（真实点赞（转发）+虚拟点赞（转发））* 平台繁荣倍率 （24小时内增加至最大值）</label>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -199,11 +213,14 @@ export default {
       etemp: {
         godname: "",
         godtype: 1,
-        field: "",
+        field: undefined,
         phone: "",
         desc: "",
         introduction: "",
-        account: ""
+        account: "",
+        viragree: 0,
+        virshare: 0,
+        platformrate: 1
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -246,7 +263,7 @@ export default {
           value: 2,
           label: "LOL"
         },
-         {
+        {
           value: 3,
           label: "CS:GO"
         },
@@ -308,12 +325,12 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       let params = {};
       params.uid = this.temp.id;
-      if(this.temp.god==1 || this.temp.god==0) {
+      if (this.temp.god == 1 || this.temp.god == 0) {
         params.pass = 2;
-      }else {
+      } else {
         params.pass = 0;
       }
-     
+
       const index = this.list.indexOf(row);
       this.$confirm("确定吗?", "提示", {
         confirmButtonText: "确定",
@@ -348,8 +365,9 @@ export default {
         });
     },
     handleUpdate(row) {
+      row.field = +row.field;
       this.etemp = Object.assign({}, row); // copy obj
-      console.log("etemp>>",this.etemp)
+      console.log("etemp>>", this.etemp);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -363,7 +381,7 @@ export default {
           console.log("tempData>>%o", tempData);
           edit(tempData).then(res => {
             if (res.code == 200) {
-              this.getList()
+              this.getList();
               this.dialogFormVisible = false;
               this.$notify({
                 title: "成功",

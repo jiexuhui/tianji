@@ -145,7 +145,7 @@
           <span v-if="scope.row.gameid==1">DOTA2</span>
           <span v-if="scope.row.gameid==2">LOL</span>
           <span v-if="scope.row.gameid==3">CS:GO</span>
-          <span v-if="scope.row.gameid==4">英雄联盟</span>
+          <span v-if="scope.row.gameid==4">王者荣耀</span>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" min-width="150" label="logo" prop="image">
