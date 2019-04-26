@@ -668,12 +668,12 @@ export default {
     },
     handleCreate() {
       // this.resetTemp();
-      this.$refs.dataForm && this.$refs.dataForm.resetFields();
+      // this.$refs.dataForm && this.$refs.dataForm.resetFields();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+      // this.$nextTick(() => {
+      //   this.$refs["dataForm"].clearValidate();
+      // });
     },
     createData() {
       this.$refs["dataForm"].validate(valid => {

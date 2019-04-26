@@ -266,7 +266,8 @@ export default {
         logo: "",
         gameid: undefined,
         type: undefined,
-        status: 0
+        status: 0,
+        stime: ""
       },
       dialogFormVisible: false,
       dialogStatus: "",
