@@ -27,6 +27,22 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="显示">
+          <el-select
+            clearable
+            style="width: 90px"
+            class="filter-item"
+            v-model="listQuery.show"
+            placeholder="显示与否"
+          >
+            <el-option
+              v-for="item in showOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
           <!-- <el-button
@@ -73,7 +89,11 @@
       </el-table-column>
       <el-table-column align="center" label="单子ID" prop="silkid"></el-table-column>
       <el-table-column align="center" label="用户昵称" prop="nickName"></el-table-column>
-      <el-table-column align="center" label="比赛ID" prop="matchid"></el-table-column>
+      <el-table-column align="center" label="比赛ID" prop="matchid">
+        <template slot-scope="scope">
+          <span class="link-type" @click="toSerise(scope.row)">{{scope.row.matchid}}：查看比赛</span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column align="center" label="比赛" prop="matchname"></el-table-column> -->
       <el-table-column align="center" label="队伍1" prop="team1"></el-table-column>
       <el-table-column align="center" label="队伍2" prop="team2"></el-table-column>
@@ -248,7 +268,21 @@ export default {
           label: "打回"
         }
       ],
-      answers: []
+      answers: [],
+      showOptions: [
+        {
+          value: 1,
+          label: "显示"
+        },
+        {
+          value: 2,
+          label: "不显示"
+        },
+        {
+          value: 3,
+          label: "已打回"
+        }
+      ]
     };
   },
   filters: {
@@ -264,6 +298,9 @@ export default {
     this.getList();
   },
   methods: {
+    toSerise(row) {
+      this.$router.push({ name: "赛事", params: { matchid: row.matchid } });
+    },
     formatTime(time) {
       return parseTime(time);
     },

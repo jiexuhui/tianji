@@ -19,3 +19,7 @@ export function del(params) {
 export function upload(params) {
   return request.post("/admin/serise/upload", params);
 }
+
+export function settment(params) {
+  return request.post("/admin/serise/settment", params);
+}
