@@ -57,7 +57,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="活动简介" width="300px" prop="actDesc"></el-table-column>
-      <el-table-column align="center" label="活动简介" prop="jumpUrl"></el-table-column>
+      <el-table-column align="center" label="跳转地址" prop="jumpUrl"></el-table-column>
       <el-table-column align="center" min-width="150" label="宣传图" prop="image">
         <template slot-scope="scope">
           <img
@@ -104,11 +104,7 @@
             @click="handleUpdate(scope.row)"
           >{{$t('table.edit')}}</el-button>
 
-          <el-button
-            type="primary"
-            size="mini"
-            @click="handleLottery(scope.row)"
-          >开奖</el-button>
+          <el-button type="primary" size="mini" @click="handleLottery(scope.row)">开奖</el-button>
 
           <el-button size="mini" type="danger" @click="detailpath(scope.row)">详情</el-button>
         </template>
@@ -185,7 +181,7 @@
         label-width="100px"
         style="width: 400px; margin-left:50px;"
       >
-         <el-form-item label="获胜队伍" prop="teamid">
+        <el-form-item label="获胜队伍" prop="teamid">
           <el-select class="filter-item" v-model="temp.teamid" placeholder="游戏">
             <el-option
               v-for="item in gameOptions"
@@ -269,7 +265,15 @@
 </template>
 
 <script>
-import { list, add, edit, del, upload, uploadPic, drawlottery} from "@/api/draws";
+import {
+  list,
+  add,
+  edit,
+  del,
+  upload,
+  uploadPic,
+  drawlottery
+} from "@/api/draws";
 import waves from "@/directive/waves"; // 水波纹指令
 import elDragDialog from "@/directive/el-dragDialog";
 
@@ -375,15 +379,15 @@ export default {
     getList() {
       this.listLoading = true;
       list(this.listQuery).then(response => {
-        for(const item of response.data[0] ) {
-          item.tid = item.tid == null ? [] : item.tid.split(',')
-          item.tname = item.tname == null ? [] : item.tname.split(',')
+        for (const item of response.data[0]) {
+          item.tid = item.tid == null ? [] : item.tid.split(",");
+          item.tname = item.tname == null ? [] : item.tname.split(",");
         }
         this.list = response.data[0];
         this.total = response.data[1][0].count;
-       
-        console.log("list>>>", this.list)
-        this.listLoading = false; 
+
+        console.log("list>>>", this.list);
+        this.listLoading = false;
       });
     },
     handleFilter() {
@@ -450,27 +454,27 @@ export default {
 
     handleLottery(row) {
       this.temp = Object.assign({}, row); // copy obj
-       console.log("this.temo>>>", this.temp)
-      var game = {}
-      if(this.temp.tid.length > 0) {
+      console.log("this.temo>>>", this.temp);
+      var game = {};
+      if (this.temp.tid.length > 0) {
         for (const index in this.temp.tid) {
-           var game = {}
-          game.id = this.temp.tid[index]
-          game.name = this.temp.tname[index]
+          var game = {};
+          game.id = this.temp.tid[index];
+          game.name = this.temp.tname[index];
 
-          console.log("game>>>", game)
-          this.gameOptions.push(game)
-          console.log("gameOptions>>>", this.gameOptions)
+          console.log("game>>>", game);
+          this.gameOptions.push(game);
+          console.log("gameOptions>>>", this.gameOptions);
         }
       }
-      console.log("this.gameOPtions<<<",this.gameOptions)
+      console.log("this.gameOPtions<<<", this.gameOptions);
       this.dialogStatus = "lottery";
       this.lotteryFormVisible = true;
       this.$nextTick(() => {
         this.$refs["lotteForm"].clearValidate();
       });
     },
-    
+
     doLottery() {
       this.$refs["lotteForm"].validate(valid => {
         if (valid) {
