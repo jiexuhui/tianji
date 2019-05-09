@@ -79,6 +79,7 @@
           >
         </template>
       </el-table-column>
+      <el-table-column align="center" label="跳转地址" width="300px" prop="jumpUrl"></el-table-column>
       <el-table-column align="center" min-width="150" label="状态">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{scope.row.status === 1? "正常": "关闭"}}</el-tag>
@@ -135,11 +136,8 @@
         <el-form-item label="规则介绍" prop="actDesc">
           <el-input type="textarea" v-model="temp.actDesc"></el-input>
         </el-form-item>
-        <el-form-item label="免费推单ID" prop="freesilkid">
-          <el-input v-model="temp.freesilkid"></el-input>
-        </el-form-item>
-        <el-form-item label="负费推单ID" prop="feesilkid">
-          <el-input v-model="temp.feesilkid"></el-input>
+        <el-form-item label="跳转地址" prop="jumpUrl">
+          <el-input v-model="temp.jumpUrl"></el-input>
         </el-form-item>
         <el-form-item label="开始时间" prop="stime">
           <el-date-picker
