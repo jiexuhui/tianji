@@ -31,3 +31,8 @@ export function codelist(params) {
 export function lottery(params) {
   return request.get("/admin/draws/lottery", { params });
 }
+
+export function drawlottery(params) {
+  return request.get("/admin/draws/drawlottery", { params });
+}
+
